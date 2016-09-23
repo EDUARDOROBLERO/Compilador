@@ -1,0 +1,32 @@
+let 
+var a: string;  
+in 
+a := 6;    
+if a<c then  
+   while a<b do a  := 5; 
+else a := 5;
+while a do 
+      if a then  
+        while a do a  := 5; 
+     else 
+        while a do 
+           if a then  
+              while a do 
+      if a then  
+        while a do a  := 5; 
+     else 
+        while a do 
+           if a then  
+              while a do a  := 5; 
+           else a := 5;            
+while a do 
+      if a then  
+        while a do a  := 5; 
+     else 
+        while a do 
+           if a then  
+              while a do a  := 5; 
+           else a := 5;  
+get (a); 
+put ( "ssd" , a );
+end 
