@@ -79,12 +79,13 @@
             // 
             // textBox1
             // 
+            this.textBox1.BackColor = System.Drawing.Color.PaleGoldenrod;
             this.textBox1.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(36, 55);
+            this.textBox1.Location = new System.Drawing.Point(6, 55);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(475, 218);
+            this.textBox1.Size = new System.Drawing.Size(505, 218);
             this.textBox1.TabIndex = 0;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
