@@ -167,7 +167,8 @@ namespace CompiladorTriangulo
             if (dataGridView2errores.Rows.Count == 0)
             {
                 MessageBox.Show("Analisis lexico finalizado con exito");
-                
+               
+
             }
             else
             {
@@ -184,12 +185,12 @@ namespace CompiladorTriangulo
             dataGridView3.Rows.Clear();
             string text = textBox1.Text;
 
-            int numero_linea;
+            /*int numero_linea;
             numero_linea = textBox1.Lines.Count();
             for (int i = 1; i <= numero_linea; i++)
             {
-                              
-            }
+                textBox8.Text.ToString();
+            }*/
 
 
             //analisis lexico

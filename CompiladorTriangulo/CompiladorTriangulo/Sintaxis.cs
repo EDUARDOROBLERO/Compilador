@@ -19,8 +19,7 @@ namespace CompiladorTriangulo
         public Boolean band = true,  agregar = true,   esta = false,       correcto = true,     doble = true,       simple = true;
         private CrearNodo cabeza;        
         public DataGridView grierror,declarados,errores;
-        //para checar variables         
-        //
+ 
 
         public struct CrearNodo2
         {
@@ -86,20 +85,6 @@ namespace CompiladorTriangulo
             }
         }        
 
-        public void Agregar_a_lista()
-        {
-            string lexe;
-            string tipo;
-            string dato;
-
-            for (int i = 0; i < lista_declarados.Count; i++)
-            {
-                lexe=lista_declarados[i].lexe;
-                tipo = lista_declarados[i].tipo;
-                dato = lista_declarados[i].dato;
-                declarados.Rows.Add(tipo, lexe, dato);
-            }
-        }
     
         //metodo para checar las declaraciones
         public CrearNodo declaration(CrearNodo cabeza)
@@ -131,8 +116,10 @@ namespace CompiladorTriangulo
                             //para poner el tipo de dato el la lista
                             li.tipo = cabeza.lexema;
 
+                            //para agregar al datagried el contenido
                             lista_declarados.Add(li);
-
+                            declarados.Rows.Add(li.tipo,li.lexe,li.dato);
+                            
                             cabeza = cabeza.siguiente;
                             //si es ;
                             if (cabeza.toquen == 120)
@@ -213,6 +200,7 @@ namespace CompiladorTriangulo
             //si es un numero
             else if (cabeza.toquen == 101)
             {
+                
                 cabeza = cabeza.siguiente;
                                
             }
@@ -454,7 +442,8 @@ namespace CompiladorTriangulo
                 //si es un identificador            
                 if (cabeza.toquen == 100)
                 {                  
-                    variables(cabeza.lexema);                    
+                    variables(cabeza.lexema);
+                                      
                     if (simple == false)
                     {
                         errores.Rows.Add("Variable " + cabeza.lexema + " Inexistente ", cabeza.linea);
@@ -1084,8 +1073,7 @@ namespace CompiladorTriangulo
                                 if (cabeza.toquen == 205)
                                 {
                                     //para buscar variables
-                                    //Buscar_Var(cabeza.lexema);
-                                    Agregar_a_lista();                                                                        
+                                    //Buscar_Var(cabeza.lexema);                                                                                                            
                                     if (correcto == false)
                                     {
                                         break;
