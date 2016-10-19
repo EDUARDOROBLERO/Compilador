@@ -183,14 +183,7 @@ namespace CompiladorTriangulo
             dataGridView1.Rows.Clear();
             dataGridView2.Rows.Clear();
             dataGridView3.Rows.Clear();
-            string text = textBox1.Text;
-
-            /*int numero_linea;
-            numero_linea = textBox1.Lines.Count();
-            for (int i = 1; i <= numero_linea; i++)
-            {
-                textBox8.Text.ToString();
-            }*/
+            string text = textBox1.Text;            
 
 
             //analisis lexico

@@ -3,7 +3,7 @@ var a: string;
 in 
 for( var b: string; b<a; b++)
 {
-a:=4;
+a:=4.4;
 put ( "ssd" , a );
 put ( "ssd" , b );
 }

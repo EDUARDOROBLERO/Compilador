@@ -418,7 +418,7 @@ namespace CompiladorTriangulo
                 
             }else if (token2 == 14 || token2 == 126)
             {
-                tipo = "Comilla Simple";
+                tipo = "Simbolo de asignacion";
             }
             return tipo;
         }        

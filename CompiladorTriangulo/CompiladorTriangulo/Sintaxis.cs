@@ -18,14 +18,11 @@ namespace CompiladorTriangulo
         /*   verificar errores     agregar variable   encuentra variable   analisis completo    doble declarada     variable declarada una ves*/
         public Boolean band = true,  agregar = true,   esta = false,       correcto = true,     doble = true,       simple = true;
         private CrearNodo cabeza;        
-        public DataGridView grierror,declarados,errores;
- 
-
+        public DataGridView grierror,declarados,errores; 
         public struct CrearNodo2
         {
             public string lexe;
-            public string tipo;
-            public string dato;            
+            public string tipo;                        
         }
 
         public static List<CrearNodo2> lista_declarados = new List<CrearNodo2>();
@@ -118,7 +115,7 @@ namespace CompiladorTriangulo
 
                             //para agregar al datagried el contenido
                             lista_declarados.Add(li);
-                            declarados.Rows.Add(li.tipo,li.lexe,li.dato);
+                            declarados.Rows.Add(li.tipo,li.lexe);
                             
                             cabeza = cabeza.siguiente;
                             //si es ;
@@ -449,7 +446,7 @@ namespace CompiladorTriangulo
                         errores.Rows.Add("Variable " + cabeza.lexema + " Inexistente ", cabeza.linea);
                         simple = true;
                     }
-
+                    //si es una declaracion
                     if (cabeza.siguiente.toquen == 126)
                     {
                         cabeza = cabeza.siguiente;
@@ -498,6 +495,7 @@ namespace CompiladorTriangulo
                         }
                         #endregion
                     }
+                    //si es una expresion
                     if (cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen <= 117)
                     {
                         cabeza = cabeza.siguiente;
