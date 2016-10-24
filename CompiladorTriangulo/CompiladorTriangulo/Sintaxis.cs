@@ -13,28 +13,120 @@ namespace CompiladorTriangulo
 {
     class Sintaxis
     {
-
-        public string error;
+        
+        public string error, valor_de_variable;
         /*   verificar errores     agregar variable   encuentra variable   analisis completo    doble declarada     variable declarada una ves*/
         public Boolean band = true,  agregar = true,   esta = false,       correcto = true,     doble = true,       simple = true;
         private CrearNodo cabeza;        
-        public DataGridView grierror,declarados,errores; 
+        public DataGridView grierror,declarados,errores;
+
+        public Boolean valor=true;
         public struct CrearNodo2
         {
             public string lexe;
             public string tipo;                        
         }
 
+        public struct CrearNodo3
+        {
+            public string lexm;
+            public string valor;
+        }
+
         public static List<CrearNodo2> lista_declarados = new List<CrearNodo2>();
+
+        public static List<CrearNodo3> valor_variable = new List<CrearNodo3>();
         
 
         public Sintaxis(CrearNodo cabeza)
         {
             this.cabeza = cabeza;
         }
-
         Errores busca_error = new Errores();
 
+        public string aux;
+        //para llenar la tabla de variables con sus valores
+        public void Llenar_tabla()
+        {
+            int a=0;
+            int ex;
+            string dat, tip, lex, lex1;
+            for(int i=a; i < lista_declarados.Count; i++)
+            {
+                lex = lista_declarados[i].lexe;
+                
+                for (int j = 0; j < valor_variable.Count; j++)
+                {
+                    lex1 = valor_variable[j].lexm;                    
+                    if (lex == lex1)
+                    {                        
+                        aux = valor_variable[j].valor; ;
+                        valor = true;                       
+                    }
+                    else
+                    {
+                        valor = false;
+                    }                                                           
+                }
+                if (valor == true)
+                {
+                    lex = lista_declarados[i].lexe;
+                    tip = lista_declarados[i].tipo;
+                    
+                    declarados.Rows.Add(tip, lex, aux);
+                    aux = "";
+                }
+                else if (valor == false)
+                {
+                    if (aux == "")
+                    {
+                        valor = true;
+                        lex = lista_declarados[i].lexe;
+                        tip = lista_declarados[i].tipo;
+                        dat = "";
+                        declarados.Rows.Add(tip, lex, dat);
+                    }
+                    else
+                    {
+                        valor = true;
+                        lex = lista_declarados[i].lexe;
+                        tip = lista_declarados[i].tipo;
+                        dat = aux;
+                        declarados.Rows.Add(tip, lex, dat);
+                        aux = "";
+                    }                                      
+                }                
+            }
+        }
+        //para buscar si esta incicializada
+        public void Buscar_var(string lexema,int toquen,int linea)
+        {
+            int val=0;
+            for (int j = 0; j < valor_variable.Count; j++,val=j)
+            {
+                if (valor_variable[j].lexm == lexema)
+                {
+                    if (valor_variable[j].valor == "")
+                    {
+                        errores.Rows.Add(toquen , "Variable '" + lexema + "' No Inicializada ",linea, "");
+                        valor = false;
+                        break;
+                    }
+                    esta = true;                    
+                    break;
+                }
+                else
+                {
+                    esta = false;
+                }
+            }                        
+            if (valor_variable.Count == 0||esta==false)
+            {
+                errores.Rows.Add(toquen, "Variable '" + lexema + "' No Inicializada ", linea, "");
+                correcto = false;                
+            }
+        }
+        //metodos para burcar si esta o no la variable declarada
         private void variables(string Plexema)
         {            
             for (int i = 0; i < lista_declarados.Count; i++)
@@ -57,7 +149,6 @@ namespace CompiladorTriangulo
             }
 
         }
-
         public void variablesdeclaradas(string Plexema)
         {
             for (int i = 0; i < lista_declarados.Count; i++)
@@ -66,6 +157,10 @@ namespace CompiladorTriangulo
                 {
                     esta = true;
                     break;
+                }
+                else
+                {
+                    esta = false;
                 }
             }
             if (esta == true)
@@ -80,9 +175,7 @@ namespace CompiladorTriangulo
                 esta = false;
                 agregar = true;
             }
-        }        
-
-    
+        }            
         //metodo para checar las declaraciones
         public CrearNodo declaration(CrearNodo cabeza)
         {
@@ -99,7 +192,7 @@ namespace CompiladorTriangulo
                     variablesdeclaradas(cabeza.lexema);
                     if (doble == false)
                     {
-                        errores.Rows.Add("Variable " + cabeza.lexema + " Declarada Anteriormente ", cabeza.linea);
+                        errores.Rows.Add(cabeza.toquen,"Variable '" + cabeza.lexema + "' Declarada Anteriormente ", cabeza.linea,"");
                         doble = true;
                     }
                     cabeza = cabeza.siguiente;                    
@@ -114,9 +207,7 @@ namespace CompiladorTriangulo
                             li.tipo = cabeza.lexema;
 
                             //para agregar al datagried el contenido
-                            lista_declarados.Add(li);
-                            declarados.Rows.Add(li.tipo,li.lexe);
-                            
+                            lista_declarados.Add(li);                                                                                   
                             cabeza = cabeza.siguiente;
                             //si es ;
                             if (cabeza.toquen == 120)
@@ -127,8 +218,8 @@ namespace CompiladorTriangulo
                             }
                             else
                             {
-                                error = busca_error.ERROR(511);                                
-                                grierror.Rows.Add(error,511,cabeza.lexema,cabeza.linea);
+                                error = busca_error.ERROR(511);
+                                grierror.Rows.Add(511, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 band = false;
                                 break;
                             }
@@ -136,7 +227,7 @@ namespace CompiladorTriangulo
                         else
                         {
                             error = busca_error.ERROR(521);
-                            grierror.Rows.Add(error, 521, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(521, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                             break;
                         }
@@ -144,7 +235,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(519);
-                        grierror.Rows.Add(error,519,cabeza.lexema,cabeza.linea);
+                        grierror.Rows.Add(519, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }                    
@@ -152,20 +243,20 @@ namespace CompiladorTriangulo
                 else
                 {
                     error = busca_error.ERROR(515);
-                    grierror.Rows.Add(error,515,cabeza.lexema,cabeza.linea);
+                    grierror.Rows.Add(515, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                     band = false;
                     break;
                 }                                
             }
             return cabeza;            
         }
-
         //metodo para verificar expresiones primarias
         public CrearNodo PrimaryExpresion(CrearNodo cabeza)
         {
             //si es integer
             if (cabeza.toquen == 214)
             {
+                valor_de_variable = valor_de_variable + cabeza.lexema;
                 cabeza = cabeza.siguiente;
             }
             //si es char
@@ -189,54 +280,79 @@ namespace CompiladorTriangulo
                 variables(cabeza.lexema);                
                 if (simple == false)
                 {
-                    errores.Rows.Add("Variable " + cabeza.lexema + " Inexistente ", cabeza.linea);
+                    errores.Rows.Add(cabeza.toquen,"Variable '" + cabeza.lexema + "' Inexistente ", cabeza.linea,"");
                     simple = true;
                 }
+
+                Buscar_var(cabeza.lexema,cabeza.toquen,cabeza.linea);
+                valor_de_variable = valor_de_variable + cabeza.lexema;
                 cabeza = cabeza.siguiente;
             }
             //si es un numero
             else if (cabeza.toquen == 101)
             {
-                
-                cabeza = cabeza.siguiente;
-                               
+                valor_de_variable = valor_de_variable + cabeza.lexema;
+                cabeza = cabeza.siguiente;                               
             }
             //si es un decimal
             else if (cabeza.toquen == 102)
             {
+                valor_de_variable = valor_de_variable + cabeza.lexema;
+                cabeza = cabeza.siguiente;
+            }
+            //si es una cadena
+            else if (cabeza.toquen==125)
+            {
+                valor_de_variable = valor_de_variable + cabeza.lexema;
                 cabeza = cabeza.siguiente;
             }
             //si es operador
             else if (cabeza.toquen >= 103 && cabeza.toquen <= 117)
             {
+                valor_de_variable = valor_de_variable + cabeza.lexema;
                 cabeza = cabeza.siguiente;                
                 cabeza = PrimaryExpresion(cabeza);
             }
             //si es true
             else if (cabeza.toquen == 210)
             {
+                valor_de_variable = valor_de_variable + cabeza.lexema;
                 cabeza = cabeza.siguiente;
             }
             //si es false
             else if (cabeza.toquen == 211)
             {
+                valor_de_variable = valor_de_variable + cabeza.lexema;
                 cabeza = cabeza.siguiente;
             }
             //si es (
             else if(cabeza.toquen == 122)
             {
-                cabeza=cabeza.siguiente;
+                valor_de_variable = valor_de_variable + cabeza.lexema;
+                cabeza =cabeza.siguiente;
                 cabeza = Expresion(cabeza);
-            }
+                //si es )
+                if (cabeza.toquen == 123)
+                {
+                    valor_de_variable = valor_de_variable + cabeza.lexema;
+                    cabeza = cabeza.siguiente;
+                }
+                else
+                {
+                    error = busca_error.ERROR(516);
+                    grierror.Rows.Add(516, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
+                    band = false;
+                }             
+            }           
             return cabeza;
         }
-
         //metodo para verificar las segundas expresiones2
         public CrearNodo SecondExpresion2(CrearNodo cabeza)
         {
             //si es un operador
             if (cabeza.toquen >= 103 && cabeza.toquen <= 117)
             {
+                valor_de_variable = valor_de_variable + cabeza.lexema;
                 cabeza = cabeza.siguiente;
                 cabeza = PrimaryExpresion(cabeza);
                 //cabeza = cabeza.siguiente;
@@ -249,7 +365,6 @@ namespace CompiladorTriangulo
             }
             return cabeza;
         }
-
         //metodo para verificar segundas expresiones
         public CrearNodo SecondExpresion(CrearNodo cabeza)
         {
@@ -257,14 +372,12 @@ namespace CompiladorTriangulo
             cabeza = SecondExpresion2(cabeza);
             return cabeza;
         }
-
         //metodo para checar las expreciones
         public CrearNodo Expresion(CrearNodo cabeza)
         {
             cabeza = SecondExpresion(cabeza);                      
             return cabeza;
         }
-
         //metodo de else_estatement
         public CrearNodo else_estatement(CrearNodo cabeza)
         {
@@ -283,7 +396,7 @@ namespace CompiladorTriangulo
                         if (cabeza.toquen == 208)
                         {
                             error = busca_error.ERROR(520);
-                            grierror.Rows.Add(error, 520, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(520, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                             break;
                         }
@@ -343,7 +456,7 @@ namespace CompiladorTriangulo
                                                     else
                                                     {
                                                         error = busca_error.ERROR(513);
-                                                        grierror.Rows.Add(error, 513, cabeza.lexema, cabeza.linea);
+                                                        grierror.Rows.Add(513, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                                         band = false;
                                                         break;
                                                     }
@@ -351,7 +464,7 @@ namespace CompiladorTriangulo
                                                 else
                                                 {
                                                     error = busca_error.ERROR(512);
-                                                    grierror.Rows.Add(error, 512, cabeza.lexema, cabeza.linea);
+                                                    grierror.Rows.Add(512, "Se encontro  '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                                     band = false;
                                                     break;
                                                 }
@@ -360,7 +473,7 @@ namespace CompiladorTriangulo
                                         else
                                         {
                                             error = busca_error.ERROR(513);
-                                            grierror.Rows.Add(error, 513, cabeza.lexema, cabeza.linea);
+                                            grierror.Rows.Add(513, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                             band = false;
                                             break;
                                         }
@@ -368,7 +481,7 @@ namespace CompiladorTriangulo
                                     else
                                     {
                                         error = busca_error.ERROR(508);
-                                        grierror.Rows.Add(error, 508, cabeza.lexema, cabeza.linea);
+                                        grierror.Rows.Add(508, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                         band = false;
                                         break;
                                     }
@@ -376,7 +489,7 @@ namespace CompiladorTriangulo
                                 else
                                 {
                                     error = busca_error.ERROR(512);
-                                    grierror.Rows.Add(error, 512, cabeza.lexema, cabeza.linea);
+                                    grierror.Rows.Add(512, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                     band = false;
                                     break;
                                 }
@@ -384,7 +497,7 @@ namespace CompiladorTriangulo
                             else
                             {
                                 error = busca_error.ERROR(516);
-                                grierror.Rows.Add(error, 516, cabeza.lexema, cabeza.linea);
+                                grierror.Rows.Add(516, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 band = false;
                                 break;
                             }
@@ -393,7 +506,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(514);
-                        grierror.Rows.Add(error, 514, cabeza.lexema, cabeza.linea);
+                        grierror.Rows.Add(514, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }
@@ -420,7 +533,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(508);
-                        grierror.Rows.Add(error, 508, cabeza.lexema, cabeza.linea);
+                        grierror.Rows.Add(508, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }                    
@@ -429,12 +542,12 @@ namespace CompiladorTriangulo
                         
             return cabeza;
         }
-
         //metodo para checar los comandos
         public CrearNodo command(CrearNodo cabeza)
         {            
             while (cabeza.toquen==100||cabeza.toquen==206||cabeza.toquen==203||cabeza.toquen==212 || cabeza.toquen == 213 || cabeza.toquen == 217)
             {
+                var li = new CrearNodo3();
                 #region Identificador
                 //si es un identificador            
                 if (cabeza.toquen == 100)
@@ -443,12 +556,15 @@ namespace CompiladorTriangulo
                                       
                     if (simple == false)
                     {
-                        errores.Rows.Add("Variable " + cabeza.lexema + " Inexistente ", cabeza.linea);
+                        errores.Rows.Add(cabeza.toquen,"Variable '" + cabeza.lexema + "' Inexistente ", cabeza.linea,"");
                         simple = true;
                     }
                     //si es una declaracion
                     if (cabeza.siguiente.toquen == 126)
                     {
+                        //para agregar a la lista de valores de variables
+                        valor_de_variable = "";
+                        li.lexm = cabeza.lexema;
                         cabeza = cabeza.siguiente;
                         //si es := 
                         #region declaracion
@@ -459,20 +575,25 @@ namespace CompiladorTriangulo
                             if (cabeza.toquen == 120)
                             {
                                 error = busca_error.ERROR(520);
-                                grierror.Rows.Add(error, 520, cabeza.lexema, cabeza.linea);
+                                grierror.Rows.Add(520, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 band = false;
                                 break;
                             }
                             else
                             {                                
                                 cabeza = Expresion(cabeza);
-                          
+
+                                //para agregar a la lista
+                                li.valor = valor_de_variable;                                
+                                valor_variable.Add(li);                                
+                                //---------------------------
+
                                 if (band == false)
                                 {
                                     break;
-                                }
+                                }                                
                                 //si es ;
-                                if (cabeza.toquen == 120)
+                                else if (cabeza.toquen == 120)
                                 {
                                     cabeza = cabeza.siguiente;
                                     break;
@@ -480,7 +601,7 @@ namespace CompiladorTriangulo
                                 else
                                 {
                                     error = busca_error.ERROR(511);
-                                    grierror.Rows.Add(error, 511, cabeza.lexema, cabeza.linea);
+                                    grierror.Rows.Add(511, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                     band = false;
                                     break;
                                 }
@@ -489,7 +610,7 @@ namespace CompiladorTriangulo
                         else
                         {
                             error = busca_error.ERROR(510);
-                            grierror.Rows.Add(error, 510, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(510, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                             break;
                         }
@@ -513,7 +634,7 @@ namespace CompiladorTriangulo
                             else
                             {
                                 error = busca_error.ERROR(511);
-                                grierror.Rows.Add(error, 511, cabeza.lexema, cabeza.linea);
+                                grierror.Rows.Add(511, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 band = false;
                                 break;
                             }
@@ -521,7 +642,7 @@ namespace CompiladorTriangulo
                         else
                         {
                             error = busca_error.ERROR(520);
-                            grierror.Rows.Add(error, 520, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(520, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                             break;
                         }
@@ -530,7 +651,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(521);
-                        grierror.Rows.Add(error, 521, cabeza.lexema, cabeza.linea);
+                        grierror.Rows.Add(521, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }
@@ -551,7 +672,7 @@ namespace CompiladorTriangulo
                         if (cabeza.toquen == 123)
                         {
                             error = busca_error.ERROR(520);
-                            grierror.Rows.Add(error, 520, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(520, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                             break;
                         }
@@ -611,7 +732,7 @@ namespace CompiladorTriangulo
                                                     else
                                                     {
                                                         error = busca_error.ERROR(513);
-                                                        grierror.Rows.Add(error, 513, cabeza.lexema, cabeza.linea);
+                                                        grierror.Rows.Add(513, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                                         band = false;
                                                         break;
                                                     }
@@ -619,7 +740,7 @@ namespace CompiladorTriangulo
                                                 else
                                                 {
                                                     error = busca_error.ERROR(512);
-                                                    grierror.Rows.Add(error, 512, cabeza.lexema, cabeza.linea);
+                                                    grierror.Rows.Add(512, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                                     band = false;
                                                     break;
                                                 }
@@ -628,7 +749,7 @@ namespace CompiladorTriangulo
                                         else
                                         {
                                             error = busca_error.ERROR(513);
-                                            grierror.Rows.Add(error, 513, cabeza.lexema, cabeza.linea);
+                                            grierror.Rows.Add(513, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                             band = false;
                                             break;
                                         }
@@ -636,7 +757,7 @@ namespace CompiladorTriangulo
                                     else
                                     {
                                         error = busca_error.ERROR(508);
-                                        grierror.Rows.Add(error, 508, cabeza.lexema, cabeza.linea);
+                                        grierror.Rows.Add(508, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                         band = false;
                                         break;
                                     }                                    
@@ -644,7 +765,7 @@ namespace CompiladorTriangulo
                                 else
                                 {
                                     error = busca_error.ERROR(512);
-                                    grierror.Rows.Add(error, 512, cabeza.lexema, cabeza.linea);
+                                    grierror.Rows.Add(512, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                     band = false;
                                     break;
                                 }
@@ -652,7 +773,7 @@ namespace CompiladorTriangulo
                             else
                             {
                                 error = busca_error.ERROR(516);
-                                grierror.Rows.Add(error, 516, cabeza.lexema, cabeza.linea);
+                                grierror.Rows.Add(516, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 band = false;
                                 break;
                             }
@@ -661,7 +782,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(514);
-                        grierror.Rows.Add(error, 514, cabeza.lexema, cabeza.linea);
+                        grierror.Rows.Add(514, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }                    
@@ -682,7 +803,7 @@ namespace CompiladorTriangulo
                         if (cabeza.toquen == 123)
                         {
                             error = busca_error.ERROR(520);
-                            grierror.Rows.Add(error, 520, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(520, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                             break;
                         }
@@ -713,7 +834,7 @@ namespace CompiladorTriangulo
                                     else
                                     {
                                         error = busca_error.ERROR(513);
-                                        grierror.Rows.Add(error, 513, cabeza.lexema, cabeza.linea);
+                                        grierror.Rows.Add(513, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                         band = false;
                                         break;
                                     }
@@ -721,7 +842,7 @@ namespace CompiladorTriangulo
                                 else
                                 {
                                     error = busca_error.ERROR(512);
-                                    grierror.Rows.Add(error, 512, cabeza.lexema, cabeza.linea);
+                                    grierror.Rows.Add(512, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                     band = false;
                                     break;
                                 }
@@ -729,7 +850,7 @@ namespace CompiladorTriangulo
                             else
                             {
                                 error = busca_error.ERROR(516);
-                                grierror.Rows.Add(error, 516, cabeza.lexema, cabeza.linea);
+                                grierror.Rows.Add(516, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 band = false;
                                 break;
                             }                            
@@ -738,7 +859,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(514);
-                        grierror.Rows.Add(error, 514, cabeza.lexema, cabeza.linea);
+                        grierror.Rows.Add(514, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }                                       
@@ -760,9 +881,12 @@ namespace CompiladorTriangulo
                             variables(cabeza.lexema);
                             if (simple == false)
                             {
-                                errores.Rows.Add("La variable " + cabeza.lexema + " Inexistente ", cabeza.linea);
+                                errores.Rows.Add(cabeza.toquen,"Variable '" + cabeza.lexema + "' Inexistente ", cabeza.linea,"");
                                 simple = true;
                             }
+
+                            Buscar_var(cabeza.lexema,cabeza.toquen,cabeza.linea);
+
                             cabeza = cabeza.siguiente;
                             //si es un )
                             if (cabeza.toquen == 123)
@@ -777,7 +901,7 @@ namespace CompiladorTriangulo
                                 else
                                 {
                                     error = busca_error.ERROR(511);
-                                    grierror.Rows.Add(error, 511, cabeza.lexema, cabeza.linea);
+                                    grierror.Rows.Add(511, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                     band = false;
                                     break;
                                 }
@@ -785,7 +909,7 @@ namespace CompiladorTriangulo
                             else
                             {
                                 error = busca_error.ERROR(516);
-                                grierror.Rows.Add(error, 516, cabeza.lexema, cabeza.linea);
+                                grierror.Rows.Add(516, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 band = false;
                                 break;
                             }
@@ -793,7 +917,7 @@ namespace CompiladorTriangulo
                         else
                         {
                             error = busca_error.ERROR(515);
-                            grierror.Rows.Add(error, 515, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(515, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                             break;
                         }
@@ -801,7 +925,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(514);
-                        grierror.Rows.Add(error, 514, cabeza.lexema, cabeza.linea);
+                        grierror.Rows.Add(514, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }
@@ -831,9 +955,10 @@ namespace CompiladorTriangulo
                                     variables(cabeza.lexema);
                                     if (simple == false)
                                     {
-                                        errores.Rows.Add("La variable " + cabeza.lexema + " Inexistente ", cabeza.linea);
+                                        errores.Rows.Add(cabeza.toquen,"Variable '" + cabeza.lexema + "' Inexistente ", cabeza.linea,"");
                                         simple = true;
                                     }
+                                    Buscar_var(cabeza.lexema,cabeza.toquen,cabeza.linea);
                                     cabeza = cabeza.siguiente;
                                     //si es )
                                     if (cabeza.toquen == 123)
@@ -848,7 +973,7 @@ namespace CompiladorTriangulo
                                         else
                                         {
                                             error = busca_error.ERROR(511);
-                                            grierror.Rows.Add(error, 511, cabeza.lexema, cabeza.linea);
+                                            grierror.Rows.Add(511, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                             band = false;
                                             break;
                                         }
@@ -856,7 +981,7 @@ namespace CompiladorTriangulo
                                     else
                                     {
                                         error = busca_error.ERROR(516);
-                                        grierror.Rows.Add(error, 516, cabeza.lexema, cabeza.linea);
+                                        grierror.Rows.Add(516, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                         band = false;
                                         break;
                                     }
@@ -864,7 +989,7 @@ namespace CompiladorTriangulo
                                 else
                                 {
                                     error = busca_error.ERROR(515);
-                                    grierror.Rows.Add(error, 515, cabeza.lexema, cabeza.linea);
+                                    grierror.Rows.Add(515, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                     band = false;
                                     break;
                                 }
@@ -872,7 +997,7 @@ namespace CompiladorTriangulo
                             else
                             {
                                 error = busca_error.ERROR(518);
-                                grierror.Rows.Add(error, 518, cabeza.lexema, cabeza.linea);
+                                grierror.Rows.Add(518, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 band = false;
                                 break;
                             }
@@ -880,7 +1005,7 @@ namespace CompiladorTriangulo
                         else
                         {
                             error = busca_error.ERROR(517);
-                            grierror.Rows.Add(error, 517, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(517, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                             break;
                         }
@@ -888,7 +1013,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(514);
-                        grierror.Rows.Add(error, 514, cabeza.lexema, cabeza.linea);
+                        grierror.Rows.Add(514, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }
@@ -908,7 +1033,7 @@ namespace CompiladorTriangulo
                         if (cabeza.toquen == 123)
                         {
                             error = busca_error.ERROR(520);
-                            grierror.Rows.Add(error, 520, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(520, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                         }
                         else
@@ -922,7 +1047,7 @@ namespace CompiladorTriangulo
                                 if (cabeza.toquen == 123)
                                 {
                                     error = busca_error.ERROR(520);
-                                    grierror.Rows.Add(error, 520, cabeza.lexema, cabeza.linea);
+                                    grierror.Rows.Add(520, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                     band = false;
                                 }
                                 else
@@ -962,7 +1087,7 @@ namespace CompiladorTriangulo
                                                 else
                                                 {
                                                     error = busca_error.ERROR(513);
-                                                    grierror.Rows.Add(error, 513, cabeza.lexema, cabeza.linea);
+                                                    grierror.Rows.Add(513, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                                     band = false;
                                                     break;
                                                 }
@@ -970,7 +1095,7 @@ namespace CompiladorTriangulo
                                             else
                                             {
                                                 error = busca_error.ERROR(508);
-                                                grierror.Rows.Add(error, 508, cabeza.lexema, cabeza.linea);
+                                                grierror.Rows.Add(508, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                                 band = false;
                                                 break;
                                             }
@@ -979,7 +1104,7 @@ namespace CompiladorTriangulo
                                         else
                                         {
                                             error = busca_error.ERROR(512);
-                                            grierror.Rows.Add(error, 512, cabeza.lexema, cabeza.linea);
+                                            grierror.Rows.Add(512, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                             band = false;
                                             break;
                                         }
@@ -987,7 +1112,7 @@ namespace CompiladorTriangulo
                                     else
                                     {
                                         error = busca_error.ERROR(516);
-                                        grierror.Rows.Add(error, 516, cabeza.lexema, cabeza.linea);
+                                        grierror.Rows.Add(516, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                         break;
                                     }
                                 }
@@ -995,7 +1120,7 @@ namespace CompiladorTriangulo
                             else
                             {
                                 error = busca_error.ERROR(511);
-                                grierror.Rows.Add(error, 511, cabeza.lexema, cabeza.linea);
+                                grierror.Rows.Add(511, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 break;
                             }
                         }
@@ -1004,7 +1129,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(515);
-                        grierror.Rows.Add(error, 515, cabeza.lexema, cabeza.linea);
+                        grierror.Rows.Add(515, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;                    
                     }
@@ -1018,11 +1143,11 @@ namespace CompiladorTriangulo
                 }
             }
             return cabeza;
-        }
-              
+        }              
         public void analisador()
         {
             lista_declarados.Clear();
+            valor_variable.Clear();
             while (cabeza!=null)
             {
                 #region analizador
@@ -1071,22 +1196,25 @@ namespace CompiladorTriangulo
                                 if (cabeza.toquen == 205)
                                 {
                                     //para buscar variables
-                                    //Buscar_Var(cabeza.lexema);                                                                                                            
+                                    //Buscar_Var(cabeza.lexema); 
+                                    Llenar_tabla();
+                                    lista_declarados.Clear();
+                                    valor_variable.Clear();
                                     if (correcto == false)
                                     {
                                         break;
                                     }
                                     else
-                                    {
+                                    {                                        
+                                        
                                         MessageBox.Show("Analisis Sintactico Exitoso");
-                                        lista_declarados.Clear();
                                         break;
                                     }                                    
                                 }
                                 else
                                 {
                                     error = busca_error.ERROR(509);
-                                    grierror.Rows.Add(error, 509, cabeza.lexema, cabeza.linea);
+                                    grierror.Rows.Add(509, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                     band = false;
                                     break;
                                 }
@@ -1094,7 +1222,7 @@ namespace CompiladorTriangulo
                             else
                             {
                                 error = busca_error.ERROR(508);
-                                grierror.Rows.Add(error, 508, cabeza.lexema, cabeza.linea);
+                                grierror.Rows.Add(508, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                 band = false;
                                 break;
                             }
@@ -1103,7 +1231,7 @@ namespace CompiladorTriangulo
                         else
                         {
                             error = busca_error.ERROR(507);
-                            grierror.Rows.Add(error, 507, cabeza.lexema, cabeza.linea);
+                            grierror.Rows.Add(507, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                             band = false;
                             break;
                         }
@@ -1111,7 +1239,7 @@ namespace CompiladorTriangulo
                     else
                     {
                         error = busca_error.ERROR(506);
-                        grierror.Rows.Add(error, 506, cabeza.lexema, cabeza.linea);
+                        grierror.Rows.Add(506, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }
@@ -1119,7 +1247,7 @@ namespace CompiladorTriangulo
                 else
                 {
                     error = busca_error.ERROR(505);
-                    grierror.Rows.Add(error, 505, cabeza.lexema, cabeza.linea);
+                    grierror.Rows.Add(505,"Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                     band = false;
                     break;
                 }

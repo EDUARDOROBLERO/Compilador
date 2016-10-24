@@ -23,13 +23,12 @@ namespace CompiladorTriangulo
         public lexico(string texto)
         {
             text = texto;            
-
             #region Matriz de Transición
 
             MTri = new int[,]
             {
-            //         0        1       2       3       4       5       6       7        8      9       10      11      12      13      14      15     16      17      18      19      20      21      22     23    24     25     26*/
-           /*Q\W  //   L		D		+		-		*		/		>		<		=		\		.		,		;		:		(		)	  {       }        !		"		'	  eb	  tab 	 nl		 eol	 eof	  OC
+            //       0       1       2       3        4      5       6       7        8      9       10      11      12      13      14      15       16      17      18      19      20     21      22      23      24      25       26*/
+           /*Q\W  // L		 D		 +		 -		  *		 /		 >		 <		  =		 \		  .		  ,		  ;		 :		  (		  )	      {       }       !		  "		  '	     eb	     tab 	 nl		 eol	 eof	  OC
             /*0*/{   1   ,   2   ,   5   ,   6   ,   105 ,   7   ,   8   ,   9   ,   109 ,   10  ,   118 ,   119 ,   120 ,   11  ,   122 ,   123 ,   124 ,   125 ,   12  ,   13  ,   14  ,   0   ,   0   ,   0   ,   0   ,   0   ,   500 },
             /*1*/{   1   ,   1   ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 ,   100 },
             /*2*/{   101 ,   2   ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   3   ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 ,   101 },
@@ -49,7 +48,6 @@ namespace CompiladorTriangulo
             };
 
             #endregion
-
         }
 
         public int obtener_col(char xcaracter)
@@ -195,7 +193,7 @@ namespace CompiladorTriangulo
                     }                    
                     toquen = edo;
                     error = busca_error.ERROR(toquen);
-                    griderror.Rows.Add(lexema, error, toquen, linea, puntero);
+                    griderror.Rows.Add(toquen, "Se encontro '" + lexema + "' y provoco un error, " + error, linea, puntero);
                     edo = 0;
                     lexema = "";                    
                     puntero += 1;
@@ -227,7 +225,7 @@ namespace CompiladorTriangulo
                             {
                                 toquen = 502;
                                 error = busca_error.ERROR(toquen);
-                                griderror.Rows.Add(lexema,error,toquen,linea,puntero);                                
+                                griderror.Rows.Add(toquen, "Se encontro '" + lexema + "' y provoco un error, " + error, linea, puntero);
                                 lexema = "";
                                 edo = 0;
                                 puntero += 1;
@@ -237,7 +235,7 @@ namespace CompiladorTriangulo
                             {
                                 toquen = 503;
                                 error = busca_error.ERROR(toquen);
-                                griderror.Rows.Add(lexema, error, toquen, linea, puntero);                                
+                                griderror.Rows.Add(toquen, "Se encontro '" + lexema + "' y provoco un error, " + error, linea, puntero);
                                 lexema = "";
                                 edo = 0;
                                 puntero += 1;
@@ -247,7 +245,7 @@ namespace CompiladorTriangulo
                             {
                                 toquen = 504;
                                 error = busca_error.ERROR(toquen);
-                                griderror.Rows.Add(lexema, error, toquen, linea, puntero);                                
+                                griderror.Rows.Add(toquen, "Se encontro '" + lexema + "' y provoco un error, " + error, linea, puntero);
                                 lexema = "";
                                 edo = 0;
                                 puntero += 1;
@@ -264,7 +262,7 @@ namespace CompiladorTriangulo
                         else
                         {
                             error = busca_error.ERROR(toquen);
-                            griderror.Rows.Add(lexema, error, toquen, linea, puntero);                            
+                            griderror.Rows.Add(toquen, "Se encontro '"+lexema+"' y provoco un error, " + error, linea, puntero);
                             edo = 0;
                             lexema = "";
                             puntero += 1;
@@ -422,78 +420,5 @@ namespace CompiladorTriangulo
             }
             return tipo;
         }        
-
-        /*public string ERROR(int tk)
-        {
-            switch (tk)
-            {
-                case 500:
-                    error = "simbolo no valido";
-
-                    break;
-                case 501:
-                    error =  "se esperaba una comilla";
-
-                    break;
-                case 502:
-                    error =  "Se esperaba una comilla simple";                
-                    break;
-                case 503:
-                    error =  "Se esperaba un caracter";
-                    break;
-                
-                //errores sintacticos
-                case 504:
-                    error = "se esperava un let";
-                    break;
-                case 505:
-                    error= "se esperaba una declaracion con var";
-                    break;
-                case 506:
-                    error= "se esperaba in";
-                    break;
-                case 507:
-                    error= "se esperaba un comando";
-                    break;
-                case 508:
-                    error= "se esperaba end";
-                    break;
-                case 509:
-                    error= "se esperaba :=";
-                    break;
-                case 510:
-                    error= "se esperaba un ;";
-                    break;
-                case 511:
-                    error="se esperaba un then";
-                    break;
-                case 512:
-                    error= "se esperaba un do";
-                    break;
-                case 513:
-                    error= "se esperaba (";
-                    break;
-                case 514:
-                    error= "se esperaba un identificador";
-                    break;
-                case 515:
-                    error= "se esperaba un )";
-                    break;
-                case 516:
-                    error= "se esperaba una cadena";
-                    break;
-                case 517:
-                    error= "se esperaba una commilla";
-                    break;
-                case 518:
-                    error= "se esperaba :";
-                    break;
-                case 519:
-                    error = "se esperaba una exprecion";
-                    break;
-
-            }
-            return error;
-        }*/
     }
 }

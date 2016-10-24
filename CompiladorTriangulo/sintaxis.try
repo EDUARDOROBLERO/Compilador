@@ -1,10 +1,14 @@
 let 
 var a: string;  
+var b: string;  
+var d: string;  
 in 
-for( var b: string; b<a; b++)
+b:=0;
+a:=b+3;
+for( var r: string; b<a; b++)
 {
 a:=4.4;
 put ( "ssd" , a );
-put ( "ssd" , b );
+put ( "ssd" , d);
 }
 end

@@ -151,20 +151,20 @@ namespace CompiladorTriangulo
 
         private void lexicoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dataGridView1Lexico.Rows.Clear();
-            dataGridView2errores.Rows.Clear();
-            dataGridView1.Rows.Clear();
+            dataGridView1Lexico.Rows.Clear();            
             dataGridView2.Rows.Clear();
             dataGridView3.Rows.Clear();
+
+            Tabla_De_Errores.Rows.Clear();
             string text = textBox1.Text;
 
             //analisis lexico
             lexico form = new lexico(text);
             form.gridtoken = dataGridView1Lexico;
-            form.griderror = dataGridView2errores;
+            form.griderror = Tabla_De_Errores;
             form.analizador();
 
-            if (dataGridView2errores.Rows.Count == 0)
+            if (Tabla_De_Errores.Rows.Count == 0)
             {
                 MessageBox.Show("Analisis lexico finalizado con exito");
                
@@ -178,27 +178,28 @@ namespace CompiladorTriangulo
 
         private void sintaxisToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dataGridView1Lexico.Rows.Clear();
-            dataGridView2errores.Rows.Clear();
-            dataGridView1.Rows.Clear();
+            dataGridView1Lexico.Rows.Clear();            
             dataGridView2.Rows.Clear();
             dataGridView3.Rows.Clear();
+            Tabla_De_Errores.Rows.Clear();
             string text = textBox1.Text;            
 
 
             //analisis lexico
             lexico form = new lexico(text);
             form.gridtoken = dataGridView1Lexico;
-            form.griderror = dataGridView2errores;            
+
+            form.griderror = Tabla_De_Errores;            
             form.analizador();
 
-            if (dataGridView2errores.Rows.Count == 0)
+            if (Tabla_De_Errores.Rows.Count == 0)
             {
                 //analisis sintactico
                 Sintaxis form2 = new Sintaxis(form.cabeza);
-                form2.grierror = dataGridView1;
+                form2.grierror = Tabla_De_Errores;
                 form2.declarados = dataGridView2;
-                form2.errores = dataGridView3;
+
+                form2.errores = Tabla_De_Errores;
                 form2.analisador();
             }
             else
@@ -209,9 +210,7 @@ namespace CompiladorTriangulo
 
         private void todoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dataGridView1Lexico.Rows.Clear();
-            dataGridView2errores.Rows.Clear();
-            dataGridView1.Rows.Clear();
+            dataGridView1Lexico.Rows.Clear();           
             dataGridView2.Rows.Clear();
             dataGridView3.Rows.Clear();
             string text = textBox1.Text;
@@ -219,15 +218,15 @@ namespace CompiladorTriangulo
             //analisis lexico
             lexico form = new lexico(text);
             form.gridtoken = dataGridView1Lexico;
-            form.griderror = dataGridView2errores;
+            form.griderror = Tabla_De_Errores;
             form.analizador();
 
             //analisis sintactico
             Sintaxis form2 = new Sintaxis(form.cabeza);
-            form2.grierror = dataGridView1;
+            form2.grierror = Tabla_De_Errores;
             form2.analisador();
 
-            if (dataGridView2errores.Rows.Count == 0||dataGridView1.Rows.Count==0)
+            if (Tabla_De_Errores.Rows.Count == 0)
             {
                                                
             }
@@ -239,9 +238,7 @@ namespace CompiladorTriangulo
 
         private void limpiarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dataGridView1Lexico.Rows.Clear();
-            dataGridView2errores.Rows.Clear();
-            dataGridView1.Rows.Clear();
+            dataGridView1Lexico.Rows.Clear();            
             dataGridView2.Rows.Clear();
             dataGridView3.Rows.Clear();
             textBox1.Clear();            
@@ -277,6 +274,41 @@ namespace CompiladorTriangulo
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
             
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F7)
+            {
+                dataGridView1Lexico.Rows.Clear();
+                dataGridView2.Rows.Clear();
+                dataGridView3.Rows.Clear();
+                Tabla_De_Errores.Rows.Clear();
+                string text = textBox1.Text;
+
+
+                //analisis lexico
+                lexico form = new lexico(text);
+                form.gridtoken = dataGridView1Lexico;
+
+                form.griderror = Tabla_De_Errores;
+                form.analizador();
+
+                if (Tabla_De_Errores.Rows.Count == 0)
+                {
+                    //analisis sintactico
+                    Sintaxis form2 = new Sintaxis(form.cabeza);
+                    form2.grierror = Tabla_De_Errores;
+                    form2.declarados = dataGridView2;
+
+                    form2.errores = Tabla_De_Errores;
+                    form2.analisador();
+                }
+                else
+                {
+                    MessageBox.Show("Analisis lexico finalizado con errores");
+                }
+            }
         }
     }
 
