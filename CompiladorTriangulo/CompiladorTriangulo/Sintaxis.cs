@@ -13,169 +13,59 @@ namespace CompiladorTriangulo
 {
     class Sintaxis
     {
-        
+        public Sintaxis(CrearNodo cabeza)
+        {
+            this.cabeza = cabeza;
+        }
+        #region Variables
         public string error, valor_de_variable;
         /*   verificar errores     agregar variable   encuentra variable   analisis completo    doble declarada     variable declarada una ves*/
         public Boolean band = true,  agregar = true,   esta = false,       correcto = true,     doble = true,       simple = true;
         private CrearNodo cabeza;        
         public DataGridView grierror,declarados,errores;
-
         public Boolean valor=true;
+
+        #endregion
+
+        #region Listas para guardar informacion
+
+        //guarda lexema y tipo
         public struct CrearNodo2
         {
             public string lexe;
             public string tipo;                        
         }
-
+        //guarda lexema y valor
         public struct CrearNodo3
         {
             public string lexm;
             public string valor;
         }
 
-        public static List<CrearNodo2> lista_declarados = new List<CrearNodo2>();
-
-        public static List<CrearNodo3> valor_variable = new List<CrearNodo3>();
-        
-
-        public Sintaxis(CrearNodo cabeza)
+        //para crear una lista para checar incompativilidad
+        public struct CrearNodo4
         {
-            this.cabeza = cabeza;
+            public string tipo_variable_principal;
+            public string variable_principal;
+            public string informacion;
         }
+
+        //lista 1
+        public static List<CrearNodo2> lista_declarados = new List<CrearNodo2>();
+        //lista 2
+        public static List<CrearNodo3> valor_variable = new List<CrearNodo3>();
+        //lista 3
+        public static List<CrearNodo4> incompatibilidad = new List<CrearNodo4>();
+        #endregion
+
+        #region Clase para Errores
+
         Errores busca_error = new Errores();
 
-        public string aux;
-        //para llenar la tabla de variables con sus valores
-        public void Llenar_tabla()
-        {
-            int a=0;
-            int ex;
-            string dat, tip, lex, lex1;
-            for(int i=a; i < lista_declarados.Count; i++)
-            {
-                lex = lista_declarados[i].lexe;
-                
-                for (int j = 0; j < valor_variable.Count; j++)
-                {
-                    lex1 = valor_variable[j].lexm;                    
-                    if (lex == lex1)
-                    {                        
-                        aux = valor_variable[j].valor; ;
-                        valor = true;                       
-                    }
-                    else
-                    {
-                        valor = false;
-                    }                                                           
-                }
-                if (valor == true)
-                {
-                    lex = lista_declarados[i].lexe;
-                    tip = lista_declarados[i].tipo;
-                    
-                    declarados.Rows.Add(tip, lex, aux);
-                    aux = "";
-                }
-                else if (valor == false)
-                {
-                    if (aux == "")
-                    {
-                        valor = true;
-                        lex = lista_declarados[i].lexe;
-                        tip = lista_declarados[i].tipo;
-                        dat = "";
-                        declarados.Rows.Add(tip, lex, dat);
-                    }
-                    else
-                    {
-                        valor = true;
-                        lex = lista_declarados[i].lexe;
-                        tip = lista_declarados[i].tipo;
-                        dat = aux;
-                        declarados.Rows.Add(tip, lex, dat);
-                        aux = "";
-                    }                                      
-                }                
-            }
-        }
-        //para buscar si esta incicializada
-        public void Buscar_var(string lexema,int toquen,int linea)
-        {
-            int val=0;
-            for (int j = 0; j < valor_variable.Count; j++,val=j)
-            {
-                if (valor_variable[j].lexm == lexema)
-                {
-                    if (valor_variable[j].valor == "")
-                    {
-                        errores.Rows.Add(toquen , "Variable '" + lexema + "' No Inicializada ",linea, "");
-                        valor = false;
-                        break;
-                    }
-                    esta = true;                    
-                    break;
-                }
-                else
-                {
-                    esta = false;
-                }
-            }                        
-            if (valor_variable.Count == 0||esta==false)
-            {
-                errores.Rows.Add(toquen, "Variable '" + lexema + "' No Inicializada ", linea, "");
-                correcto = false;                
-            }
-        }
-        //metodos para burcar si esta o no la variable declarada
-        private void variables(string Plexema)
-        {            
-            for (int i = 0; i < lista_declarados.Count; i++)
-            {
-                if (lista_declarados[i].lexe == Plexema)
-                {
-                    esta = true;
-                    break;
-                }                
-            }
-            if (esta == true)
-            {
-                esta=false;
-            }
-            else
-            {                
-                correcto = false;
-                simple = false;
-                esta = false;
-            }
+        #endregion        
 
-        }
-        public void variablesdeclaradas(string Plexema)
-        {
-            for (int i = 0; i < lista_declarados.Count; i++)
-            {
-                if (lista_declarados[i].lexe == Plexema)
-                {
-                    esta = true;
-                    break;
-                }
-                else
-                {
-                    esta = false;
-                }
-            }
-            if (esta == true)
-            {
-                esta = false;
-                agregar = false;                
-                correcto = false;
-                doble = false;
-            }
-            else
-            {                
-                esta = false;
-                agregar = true;
-            }
-        }            
+        #region Corrida Sintactica
+
         //metodo para checar las declaraciones
         public CrearNodo declaration(CrearNodo cabeza)
         {
@@ -200,8 +90,8 @@ namespace CompiladorTriangulo
                     if (cabeza.toquen == 11 || cabeza.toquen == 121)
                     {
                         cabeza = cabeza.siguiente;
-                        //      integer                     char                  string                double
-                        if (cabeza.toquen == 214 || cabeza.toquen == 215 || cabeza.toquen == 216 || cabeza.toquen == 218)
+                        //      integer                     char                  string                double                  Boolean
+                        if (cabeza.toquen == 214 || cabeza.toquen == 215 || cabeza.toquen == 216 || cabeza.toquen == 218 || cabeza.toquen==219)
                         {
                             //para poner el tipo de dato el la lista
                             li.tipo = cabeza.lexema;
@@ -257,6 +147,7 @@ namespace CompiladorTriangulo
             if (cabeza.toquen == 214)
             {
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;
             }
             //si es char
@@ -286,30 +177,35 @@ namespace CompiladorTriangulo
 
                 Buscar_var(cabeza.lexema,cabeza.toquen,cabeza.linea);
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;
             }
             //si es un numero
             else if (cabeza.toquen == 101)
             {
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;                               
             }
             //si es un decimal
             else if (cabeza.toquen == 102)
             {
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;
             }
             //si es una cadena
             else if (cabeza.toquen==125)
             {
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;
             }
             //si es operador
             else if (cabeza.toquen >= 103 && cabeza.toquen <= 117)
             {
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;                
                 cabeza = PrimaryExpresion(cabeza);
             }
@@ -317,24 +213,28 @@ namespace CompiladorTriangulo
             else if (cabeza.toquen == 210)
             {
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;
             }
             //si es false
             else if (cabeza.toquen == 211)
             {
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;
             }
             //si es (
             else if(cabeza.toquen == 122)
             {
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza =cabeza.siguiente;
                 cabeza = Expresion(cabeza);
                 //si es )
                 if (cabeza.toquen == 123)
                 {
                     valor_de_variable = valor_de_variable + cabeza.lexema;
+                    inserta_cola(cabeza.toquen);
                     cabeza = cabeza.siguiente;
                 }
                 else
@@ -353,6 +253,7 @@ namespace CompiladorTriangulo
             if (cabeza.toquen >= 103 && cabeza.toquen <= 117)
             {
                 valor_de_variable = valor_de_variable + cabeza.lexema;
+                inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;
                 cabeza = PrimaryExpresion(cabeza);
                 //cabeza = cabeza.siguiente;
@@ -548,11 +449,15 @@ namespace CompiladorTriangulo
             while (cabeza.toquen==100||cabeza.toquen==206||cabeza.toquen==203||cabeza.toquen==212 || cabeza.toquen == 213 || cabeza.toquen == 217)
             {
                 var li = new CrearNodo3();
+                var li2 = new CrearNodo4();
                 #region Identificador
                 //si es un identificador            
                 if (cabeza.toquen == 100)
                 {                  
                     variables(cabeza.lexema);
+                    //para checar el tipo
+                    li2.tipo_variable_principal = tipo_variable(cabeza.lexema);
+                    li2.variable_principal = cabeza.lexema;
                                       
                     if (simple == false)
                     {
@@ -570,6 +475,11 @@ namespace CompiladorTriangulo
                         #region declaracion
                         if (cabeza.toquen == 126)
                         {
+                            //para agregar a la cola
+                            FRENTE = 0;
+                            FINAL = 0;
+                            MAX = 10000;
+                            //.............
                             cabeza = cabeza.siguiente;
                             //si no se genera una expresion
                             if (cabeza.toquen == 120)
@@ -584,8 +494,11 @@ namespace CompiladorTriangulo
                                 cabeza = Expresion(cabeza);
 
                                 //para agregar a la lista
-                                li.valor = valor_de_variable;                                
-                                valor_variable.Add(li);                                
+                                li.valor = valor_de_variable;
+                                li2.informacion = valor_de_variable;                                
+                                valor_variable.Add(li);
+                                incompatibilidad.Add(li2);
+                                checar_incopativilidad(li2.variable_principal);                                
                                 //---------------------------
 
                                 if (band == false)
@@ -1254,5 +1167,515 @@ namespace CompiladorTriangulo
                 #endregion
             }
         }
+
+        #endregion
+
+        #region manipulacion de variables
+        public string aux;
+        //para llenar la tabla de variables con sus valores
+        public void Llenar_tabla()
+        {
+            int a = 0;          
+            string dat, tip, lex, lex1;
+            for (int i = a; i < lista_declarados.Count; i++)
+            {
+                lex = lista_declarados[i].lexe;
+
+                for (int j = 0; j < valor_variable.Count; j++)
+                {
+                    lex1 = valor_variable[j].lexm;
+                    if (lex == lex1)
+                    {
+                        aux = valor_variable[j].valor; ;
+                        valor = true;
+                    }
+                    else
+                    {
+                        valor = false;
+                    }
+                }
+                if (valor == true)
+                {
+                    lex = lista_declarados[i].lexe;
+                    tip = lista_declarados[i].tipo;
+
+                    declarados.Rows.Add(tip, lex, aux);
+                    aux = "";
+                }
+                else if (valor == false)
+                {
+                    if (aux == "")
+                    {
+                        valor = true;
+                        lex = lista_declarados[i].lexe;
+                        tip = lista_declarados[i].tipo;
+                        dat = "";
+                        declarados.Rows.Add(tip, lex, dat);
+                    }
+                    else
+                    {
+                        valor = true;
+                        lex = lista_declarados[i].lexe;
+                        tip = lista_declarados[i].tipo;
+                        dat = aux;
+                        declarados.Rows.Add(tip, lex, dat);
+                        aux = "";
+                    }
+                }
+            }
+        }
+        //para buscar si esta incicializada
+        public void Buscar_var(string lexema, int toquen, int linea)
+        {
+            int val = 0;
+            for (int j = 0; j < valor_variable.Count; j++, val = j)
+            {
+                if (valor_variable[j].lexm == lexema)
+                {
+                    if (valor_variable[j].valor == "")
+                    {
+                        errores.Rows.Add(toquen, "Variable '" + lexema + "' No Inicializada ", linea, "");
+                        valor = false;
+                        break;
+                    }
+                    esta = true;
+                    break;
+                }
+                else
+                {
+                    esta = false;
+                }
+            }
+            if (valor_variable.Count == 0 || esta == false)
+            {
+                errores.Rows.Add(toquen, "Variable '" + lexema + "' No Inicializada ", linea, "");
+                correcto = false;
+            }
+        }
+        //metodos para burcar si esta o no la variable declarada
+        private void variables(string Plexema)
+        {
+            for (int i = 0; i < lista_declarados.Count; i++)
+            {
+                if (lista_declarados[i].lexe == Plexema)
+                {
+                    esta = true;
+                    break;
+                }
+            }
+            if (esta == true)
+            {
+                esta = false;
+            }
+            else
+            {
+                correcto = false;
+                simple = false;
+                esta = false;
+            }
+
+        }
+        public void variablesdeclaradas(string Plexema)
+        {
+            for (int i = 0; i < lista_declarados.Count; i++)
+            {
+                if (lista_declarados[i].lexe == Plexema)
+                {
+                    esta = true;
+                    break;
+                }
+                else
+                {
+                    esta = false;
+                }
+            }
+            if (esta == true)
+            {
+                esta = false;
+                agregar = false;
+                correcto = false;
+                doble = false;
+            }
+            else
+            {
+                esta = false;
+                agregar = true;
+            }
+        }
+        #endregion
+
+        #region incompativilidad
+        //para buscar el tipo y checar compativilidad
+        public string tipo;
+        public string tipo_variable(string Plexema)
+        {            
+            for (int i = 0; i < lista_declarados.Count; i++)
+            {
+                if (lista_declarados[i].lexe == Plexema)
+                {
+                    tipo = lista_declarados[i].tipo;
+                    break;
+                }                
+            }
+            return tipo;
+        }
+
+        public string incompatible;
+        public string checar_incopativilidad(string variable)
+        {
+            string tipo="";            
+            string informacion="";
+            for (int i = 0; i < incompatibilidad.Count; i++)
+            {
+                if (incompatibilidad[i].variable_principal == variable)
+                {                    
+                    tipo = incompatibilidad[i].tipo_variable_principal;
+                    //informacion = incompatibilidad[i].informacion;
+                    break;
+                }                
+            }
+            //checar de que tipo es
+            if (tipo == "integer"|| tipo == "Integer"|| tipo == "INTEGER")
+            {
+                incompatible = CASOS_INTEGER(informacion);
+            }
+            else if(tipo=="string"|| tipo == "String"|| tipo == "STRING")
+            {
+                incompatible = CASOS_STRING(informacion);
+            }
+            else if(tipo == "double"||tipo == "Double"|| tipo == "DOUBLE")
+            {
+                incompatible = CASOS_DOUBLE(informacion);
+            }
+            else if(tipo == "boolean"|| tipo == "Boolean"|| tipo == "BOOLEAN")
+            {
+                incompatible = CASOS_BOOLEAN(informacion);
+            }
+
+            return incompatible;
+        }
+
+        public int FRENTE, FINAL,DATO1;
+        /*variables que vamos a usar del metodo de pila que esta declarado abajo
+
+        */
+        public int[] COLA = new int[100000];
+        public void inserta_cola(int DATO)
+        {
+            if (FINAL < MAX)
+            {
+                FINAL = FINAL + 1;
+                COLA[FINAL] = DATO;
+                if (FINAL == 1)
+                {
+                    FRENTE = 1;
+                }
+                else
+                {
+                    //mensaje de cola llena
+                }
+            }
+        }
+
+        public void elimina_cola()
+        {
+            if (FRENTE != 0)
+            {
+                DATO1 = COLA[FRENTE];
+                if (FRENTE == FINAL)
+                {
+                    FRENTE = 0;
+                    FINAL = 0;
+                }
+                else
+                {
+                    FRENTE = FRENTE + 1;
+                }
+            }
+            else
+            {
+                //mensaje de cola vacia
+            }
+        }
+
+
+        #region INTEGER
+        public string CASOS_INTEGER(string info)
+        {
+            elimina_cola();
+            return incompatible;
+        }
+        #endregion
+
+        #region STRING
+        public string CASOS_STRING(string info)
+        {            
+            return incompatible;            
+        }
+        #endregion
+
+        #region DOUBLE
+        public string CASOS_DOUBLE(string info)
+        {           
+            return incompatible;            
+        }
+        #endregion
+
+        #region BOOLEAN
+        public string CASOS_BOOLEAN(string info)
+        {
+            elimina_cola();
+            return incompatible;            
+        }
+        #endregion
+
+        #endregion
+
+        #region Infix To Postfix
+        public Boolean BAND;
+        public string[] PILA = new string[100000];
+        public string texto, DATO, EPOS, aux1, aux2,postfijo;
+        public int TOPE, MAX, puntero, prioridad, prioridad_pila;
+        public char caracter;
+
+        public void postfix(string infix)
+        {            
+            postfijo="";
+            texto = "";
+            aux1 = "";
+            aux2 = "";
+            EPOS = "";
+            MAX = 0;
+            TOPE = 0;
+            puntero = 0;
+            prioridad = 0;
+            prioridad_pila = 0;
+            texto = infix;
+            MAX = texto.Length;
+
+            if (texto == "")
+            {
+                MessageBox.Show("No has introducido nada para calcular", "ALERTA", MessageBoxButtons.OK, MessageBoxIcon.Error);                
+            }
+            else
+            {
+                do
+                {
+                    caracter = texto[puntero];
+                    //si es un numero o letra
+                    if (char.IsLetterOrDigit(caracter))
+                    {
+                        if (char.IsLetter(caracter))
+                        {
+                            aux1 = aux1 + caracter;
+                            puntero++;
+                        }
+                        if (char.IsDigit(caracter))
+                        {
+                            aux2 = aux2 + caracter;
+                            puntero++;
+                        }
+                    }
+                    else
+                    {
+                        if (aux != "")
+                        {
+                            EPOS = EPOS + aux1;
+                            EPOS = EPOS + " ";
+                            aux1 = "";
+                        }
+                        if (aux2 != "")
+                        {
+                            EPOS = EPOS + aux2;
+                            EPOS = EPOS + " ";
+                            aux2 = "";
+                        }
+                        checar_prioridad(caracter);
+
+                        //espacio en blanco
+                        if (caracter == 32)
+                        {
+                            puntero++;
+                        }
+                        //si es (                
+                        else if (prioridad == -1)
+                        {
+                            prioridad_pila = 0;
+                            puntero++;
+
+                        }
+                        //si  es ) vaciar la pila
+                        else if (prioridad == -2)
+                        {
+                            while (PILA != null)
+                            {
+                                quita();
+                                if (TOPE == -1)
+                                {
+                                    TOPE = 0;
+                                    break;
+                                }
+                                EPOS = EPOS + DATO;
+                                EPOS = EPOS + " ";
+                            }
+                            puntero++;
+
+                        }
+
+                        //igual procedencia
+                        else if (prioridad == prioridad_pila)
+                        {
+                            quita();
+                            EPOS = EPOS + DATO;
+                            EPOS = EPOS + " ";
+                            DATO = caracter.ToString();
+                            pone();
+                            puntero++;
+
+                        }
+                        //mayor procedencia
+                        else if (prioridad > prioridad_pila)
+                        {
+                            DATO = caracter.ToString();
+                            pone();
+                            puntero++;
+
+                        }
+
+                        //menor procedencia
+                        else if (prioridad < prioridad_pila)
+                        {
+                            while (PILA != null)
+                            {
+                                quita();
+                                if (TOPE == -1)
+                                {
+                                    TOPE = 0;
+                                    break;
+                                }
+
+                                EPOS = EPOS + DATO;
+                                EPOS = EPOS + " ";
+                            }
+                            DATO = caracter.ToString();
+                            pone();
+                            puntero++;
+
+                        }
+                    }
+                    if (texto.Length == puntero)
+                    {
+                        if (aux1 != "")
+                        {
+                            EPOS = EPOS + aux1;
+                            EPOS = EPOS + " ";
+                            aux1 = "";
+                        }
+                        if (aux2 != "")
+                        {
+                            EPOS = EPOS + aux2;
+                            EPOS = EPOS + " ";
+                            aux2 = "";
+                        }
+                        while (PILA != null)
+                        {
+                            quita();
+                            if (TOPE == -1)
+                            {
+                                TOPE = 0;
+                                break;
+                            }
+                            EPOS = EPOS + DATO;
+                            EPOS = EPOS + " ";
+                        }
+                    }
+                } while (texto.Length > puntero);
+            }
+            postfijo = EPOS;
+        }
+        public void checar_prioridad(char xcaracter)
+        {
+            /*clasificacion de caracteres             
+             * 4.-  [ ] { }             
+             * 3.-  Exponencial Raiz             
+             * 2.-  * /             
+             * 1.-  + -            
+             *-1.-  (
+             *-2.-  )                       
+            */
+            char s = (char)94;//Exponencial
+            char l = (char)251;//Raiz            
+            switch (xcaracter)
+            {
+                case '(': prioridad = -1; break;
+                case ')': prioridad = -2; break;
+
+                case '[': prioridad = 4; break;
+                case ']': prioridad = 4; break;
+                case '{': prioridad = 4; break;
+                case '}': prioridad = 4; break;
+
+
+                case '*': prioridad = 2; break;
+                case '/': prioridad = 2; break;
+                case '+': prioridad = 1; break;
+                case '-': prioridad = 1; break;
+            }
+            if (xcaracter == s) prioridad = 3;
+            if (xcaracter == l) prioridad = 3;
+        }
+        public void pila_vacia()
+        {
+            if (TOPE == 0)
+            {
+                BAND = true;
+                TOPE = -1;
+                prioridad_pila = 0;
+                prioridad = 0;
+            }
+            else
+            {
+                BAND = false;
+            }
+        }
+        public void pila_llena()
+        {
+            if (TOPE == MAX)
+            {
+                BAND = true;
+            }
+            else
+            {
+                BAND = false;
+            }
+        }
+        public void pone()
+        {
+            pila_llena();
+            if (BAND == true)
+            {
+                //mensaje de lleno
+            }
+            else
+            {
+                TOPE = TOPE + 1;
+                PILA[TOPE] = DATO;
+            }
+            prioridad_pila = prioridad;
+        }
+        public void quita()
+        {
+            pila_vacia();
+            if (BAND == true)
+            {
+                //mensaje de vacio
+            }
+            else
+            {
+                DATO = PILA[TOPE];
+                TOPE = TOPE - 1;
+            }
+        }
+        #endregion
     }
 }

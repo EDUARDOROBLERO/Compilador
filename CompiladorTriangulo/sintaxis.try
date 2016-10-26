@@ -1,9 +1,9 @@
 let 
 var a: string;  
-var b: string;  
+var b: boolean;  
 var d: string;  
 in 
-b:=0;
+b:=true;
 a:=b+3;
 for( var r: string; b<a; b++)
 {

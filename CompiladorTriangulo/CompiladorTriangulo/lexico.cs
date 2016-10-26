@@ -358,6 +358,11 @@ namespace CompiladorTriangulo
                 case "Double": tok = 218; break;
                 case "DOUBLE": tok = 218; break;
 
+                //casos de boolean
+                case "boolean": tok = 219; break;
+                case "Boolean": tok = 219; break;
+                case "BOOLEAN": tok = 219; break;
+
                 default: tok = toquen;  break;
             }
             return tok;
@@ -410,7 +415,7 @@ namespace CompiladorTriangulo
                 tipo = "Cadena";
                 
             }
-            else if (token2>=200&&token2<=218)
+            else if (token2>=200&&token2<=219)
             {
                 tipo = "Palabra Recervada";
                 

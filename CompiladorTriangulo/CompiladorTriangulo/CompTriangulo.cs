@@ -241,6 +241,7 @@ namespace CompiladorTriangulo
             dataGridView1Lexico.Rows.Clear();            
             dataGridView2.Rows.Clear();
             dataGridView3.Rows.Clear();
+            Tabla_De_Errores.Rows.Clear();
             textBox1.Clear();            
         }
 

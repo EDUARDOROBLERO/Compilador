@@ -156,14 +156,14 @@
             // lexicoToolStripMenuItem
             // 
             this.lexicoToolStripMenuItem.Name = "lexicoToolStripMenuItem";
-            this.lexicoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lexicoToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.lexicoToolStripMenuItem.Text = "Lexico";
             this.lexicoToolStripMenuItem.Click += new System.EventHandler(this.lexicoToolStripMenuItem_Click);
             // 
             // sintaxisToolStripMenuItem
             // 
             this.sintaxisToolStripMenuItem.Name = "sintaxisToolStripMenuItem";
-            this.sintaxisToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.sintaxisToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.sintaxisToolStripMenuItem.Text = "Sintaxis";
             this.sintaxisToolStripMenuItem.Click += new System.EventHandler(this.sintaxisToolStripMenuItem_Click);
             // 
@@ -257,7 +257,7 @@
             this.dataGridViewTextBoxColumn1,
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn3});
-            this.dataGridView2.Location = new System.Drawing.Point(533, 183);
+            this.dataGridView2.Location = new System.Drawing.Point(527, 183);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.ReadOnly = true;
             this.dataGridView2.Size = new System.Drawing.Size(503, 102);
@@ -288,7 +288,7 @@
             // 
             this.textBox6.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.textBox6.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox6.Location = new System.Drawing.Point(528, 162);
+            this.textBox6.Location = new System.Drawing.Point(522, 162);
             this.textBox6.Multiline = true;
             this.textBox6.Name = "textBox6";
             this.textBox6.ReadOnly = true;
