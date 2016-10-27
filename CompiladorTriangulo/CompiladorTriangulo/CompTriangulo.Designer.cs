@@ -76,6 +76,7 @@
             // textBox1
             // 
             this.textBox1.BackColor = System.Drawing.Color.PaleGoldenrod;
+            this.textBox1.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.textBox1.Font = new System.Drawing.Font("Times New Roman", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox1.Location = new System.Drawing.Point(38, 55);
             this.textBox1.Multiline = true;

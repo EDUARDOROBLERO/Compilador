@@ -1,14 +1,14 @@
-let 
-var a: string;  
-var b: boolean;  
-var d: string;  
-in 
-b:=true;
-a:=b+3;
-for( var r: string; b<a; b++)
+LET 
+VAR A: STRING;  
+VAR B: BOOLEAN;  
+VAR D: STRING;  
+IN 
+B:=TRUE;
+A:=B+3;
+FOR( VAR R: STRING; B<A; B++)
 {
-a:=4.4;
-put ( "ssd" , a );
-put ( "ssd" , d);
+A:=4.4;
+PUT ( "SSD" , A );
+PUT ( "SSD" , D);
 }
-end
+END

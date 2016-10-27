@@ -29,6 +29,9 @@ namespace CompiladorTriangulo
                 case 504:
                     error = "Se esperaba un caracter";
                     break;
+                case 524:
+                    error = "Se esperaba otra &";
+                    break;
 
                 //errores sintacticos
                 case 505:
