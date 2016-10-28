@@ -1,0 +1,12 @@
+LET 
+VAR A: STRING;  
+VAR B: BOOLEAN;  
+VAR D: STRING;  
+IN 
+B:=TRUE;
+A:="STRING";
+FOR( VAR R: STRING; B<=A; A:="CADENA")
+{
+A:=4.4;
+}
+END

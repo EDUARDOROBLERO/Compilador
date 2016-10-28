@@ -25,7 +25,7 @@ namespace CompiladorTriangulo
         //..........
 
         /*   verificar errores     agregar variable   encuentra variable   analisis completo    doble declarada     variable declarada una ves*/
-        public Boolean band = true,  agregar = true,   esta = false,       correcto = true,     doble = true,       simple = true;
+        public Boolean band = true,  agregar = true,   esta = false,       correcto = true,     doble = true,       simple = true, inicia=false , esta1=true;
         private CrearNodo cabeza;        
         public DataGridView grierror,declarados,errores;
         public Boolean valor=true;
@@ -72,10 +72,73 @@ namespace CompiladorTriangulo
                     tipo = lista_declarados[i].tipo;
                     break;
                 }
+                else
+                {
+                    esta = true;
+                }                
             }
             return tipo;
         }
+        
+        #region sentencia if y while
+        public CrearNodo INCOMPATIBILIDAD1IF(CrearNodo cabeza)
+        {
+            string tip1,tip2,operador;
+            //por si es un operador entre tipos
+            if (cabeza.siguiente.toquen == 109 || cabeza.siguiente.toquen == 110 || cabeza.siguiente.toquen == 109)
+            {
+                tip1 = tipo_variable(cabeza.lexema);
+                cabeza = cabeza.siguiente;
+                operador = cabeza.lexema;
+                cabeza = cabeza.siguiente;
+                tip2 = tipo_variable(cabeza.lexema);
+                if (tip1 != tip2)
+                {
+                    errores.Rows.Add(cabeza.toquen, "Error con '" + tip1 + "' y '" + tip2 + "'  Deven de ser del  mismo tipo cuando se utiliza el operador '" + operador + "' ", cabeza.linea, "");
+                }
+            }
+            return cabeza;
+        }
+        //metodo para verificar las segundas expresiones2
+        public CrearNodo INCOMPATIBILIDAD2IF(CrearNodo cabeza)
+        {
+            //si es un operador
+            if (cabeza.toquen >= 103 && cabeza.toquen <= 117 || cabeza.toquen == 129)
+            {
+                cabeza = cabeza.siguiente;
+                cabeza = INCOMPATIBILIDAD1IF(cabeza);
+                //cabeza = cabeza.siguiente;
+                cabeza = INCOMPATIBILIDAD2IF(cabeza);
+            }
+            else if (cabeza.toquen == 128)
+            {
+                cabeza = cabeza.siguiente;
+                cabeza = INCOMPATIBILIDAD1(cabeza);
+                cabeza = INCOMPATIBILIDAD2(cabeza);
+            }
+            else
+            {
+                //no se hace nada
+                //cabeza = cabeza.siguiente;               
+            }
+            return cabeza;
+        }
+        //metodo para verificar segundas expresiones
+        public CrearNodo INCOMPATIBILIDADIF(CrearNodo cabeza)
+        {
+            cabeza = INCOMPATIBILIDAD1IF(cabeza);
+            cabeza = INCOMPATIBILIDAD2IF(cabeza);
+            return cabeza;
+        }
+        //metodo para checar las expreciones
+        public CrearNodo INCOMPATIBLEIF(CrearNodo cabeza)
+        {
+            cabeza = INCOMPATIBILIDADIF(cabeza);
+            return cabeza;
+        }
+        #endregion*/
 
+        #region asignaciones
         public CrearNodo INCOMPATIBILIDAD1(CrearNodo cabeza)
         {            
             //si es integer
@@ -102,10 +165,10 @@ namespace CompiladorTriangulo
             else if (cabeza.toquen == 100)
             {
                 string tip;
-                tip = tipo_variable(cabeza.lexema);
 
+                //por si es un operador entre tipos
                 //verificar el tipo de variable
-
+                tip = tipo_variable(cabeza.lexema);
                 //INTEGER
                 if (tipo_variable_principal == "INTEGER")
                 {
@@ -113,12 +176,12 @@ namespace CompiladorTriangulo
                     //      DOUBLE               STRING              BOOLEAN
                     if (tip != "INTEGER")
                     {
-                        errores.Rows.Add(cabeza.toquen,"Error con '"+cabeza.lexema+"' "+ "No se puede convertir implicitamente el tipo '"+tipo_variable_principal+ "' en '"+tip+"' ", cabeza.linea, "");
-                    }                    
-                }  
-                                
+                        errores.Rows.Add(cabeza.toquen, "Error con '" + cabeza.lexema + "' " + "No se puede convertir implicitamente el tipo '" + tipo_variable_principal + "' en '" + tip + "' ", cabeza.linea, "");
+                    }
+                }
+
                 //DOUBLE            
-                if(tipo_variable_principal == "DOUBLE")
+                if (tipo_variable_principal == "DOUBLE")
                 {
                     //NO PERMITE            STRING                                                     BOOLEAN 
                     if (tip == "BOOLEAN")
@@ -137,7 +200,7 @@ namespace CompiladorTriangulo
                         errores.Rows.Add(cabeza.toquen, "Error con '" + cabeza.lexema + "' " + "No se puede convertir implicitamente el tipo '" + tipo_variable_principal + "' en '" + tip + "' ", cabeza.linea, "");
                     }
                 }
-            
+
                 //BOOLEAN
                 if (tipo_variable_principal == "BOOLEAN")
                 {
@@ -198,7 +261,8 @@ namespace CompiladorTriangulo
             }
             //si es operador
             else if (cabeza.toquen >= 103 && cabeza.toquen <= 117)
-            {              
+            {
+                cabeza = cabeza.siguiente;
                 cabeza = INCOMPATIBILIDAD1(cabeza);
             }
             //si es true o false
@@ -228,11 +292,17 @@ namespace CompiladorTriangulo
         public CrearNodo INCOMPATIBILIDAD2(CrearNodo cabeza)
         {
             //si es un operador
-            if (cabeza.toquen >= 103 && cabeza.toquen <= 117)
+            if (cabeza.toquen >= 103 && cabeza.toquen <= 117 || cabeza.toquen == 129)
             {                
                 cabeza = cabeza.siguiente;
                 cabeza = INCOMPATIBILIDAD1(cabeza);
                 //cabeza = cabeza.siguiente;
+                cabeza = INCOMPATIBILIDAD2(cabeza);
+            }
+            else if (cabeza.toquen == 128)
+            {
+                cabeza = cabeza.siguiente;
+                cabeza = INCOMPATIBILIDAD1(cabeza);
                 cabeza = INCOMPATIBILIDAD2(cabeza);
             }
             else
@@ -255,7 +325,7 @@ namespace CompiladorTriangulo
             cabeza = INCOMPATIBILIDAD(cabeza);
             return cabeza;
         }
-
+        #endregion
 
         #region Corrida Sintactica
 
@@ -347,7 +417,7 @@ namespace CompiladorTriangulo
             else if (cabeza.toquen == 215)
             {
                 cabeza = cabeza.siguiente;
-            }
+            }            
             //si es string
             else if (cabeza.toquen == 216)
             {
@@ -358,20 +428,69 @@ namespace CompiladorTriangulo
             {
                 cabeza = cabeza.siguiente;
             }
-            //si es identoificador
+            //si es identificador
             else if (cabeza.toquen == 100)
             {
-                variables(cabeza.lexema);                
+                
+                variables(cabeza.lexema);
+                                
                 if (simple == false)
                 {
                     errores.Rows.Add(cabeza.toquen,"Variable '" + cabeza.lexema + "' Inexistente ", cabeza.linea,"");
                     simple = true;
-                }
+                    esta1 = false;
+                }                
 
-                Buscar_var(cabeza.lexema,cabeza.toquen,cabeza.linea);
-                valor_de_variable = valor_de_variable + cabeza.lexema;
-                //inserta_cola(cabeza.toquen);
-                cabeza = cabeza.siguiente;
+                //verificar si es asignacion :=
+                if (cabeza.siguiente.toquen == 126)
+                {
+                    //cabeza=cabeza.siguiente;
+                    var li = new CrearNodo3();
+                    //para checar el tipo                    
+                    tipo_variable_principal = tipo_variable(cabeza.lexema);
+                    variable_principal = cabeza.lexema;
+                    //para agregar a la lista de valores de variables
+                    valor_de_variable = "";
+                    li.lexm = cabeza.lexema;
+                    //aqui esta en :=
+                    cabeza = cabeza.siguiente;
+                    //avanzamos
+                    cabeza = cabeza.siguiente;
+                    //si no se genera una expresion
+                    if (cabeza.toquen == 120)
+                    {
+                        error = busca_error.ERROR(520);
+                        grierror.Rows.Add(520, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
+                        band = false;
+                    }
+                    else
+                    {
+                        if (esta1 == true)
+                        {
+                            INCOMPATIBLE(cabeza);
+                        }
+                        else if (esta1 == false)
+                        {
+                            esta1 = true;
+                        }
+                        cabeza = Expresion(cabeza);
+
+                        //para agregar a la lista
+                        li.valor = valor_de_variable;
+                        valor_variable.Add(li);
+                    }
+                }                                              
+                else{
+                    if (inicia == true)
+                    {
+                        Buscar_var(cabeza.lexema, cabeza.toquen, cabeza.linea);
+                        inicia = false;
+                    }
+                    
+                    valor_de_variable = valor_de_variable + cabeza.lexema;
+                    cabeza = cabeza.siguiente;
+                }
+                
             }
             //si es un numero
             else if (cabeza.toquen == 101)
@@ -443,19 +562,22 @@ namespace CompiladorTriangulo
         public CrearNodo SecondExpresion2(CrearNodo cabeza)
         {
             //si es un operador
-            if (cabeza.toquen >= 103 && cabeza.toquen <= 117)
+            if (cabeza.toquen >= 103 && cabeza.toquen <= 117||cabeza.toquen==129)
             {
-                valor_de_variable = valor_de_variable + cabeza.lexema;
-                //inserta_cola(cabeza.toquen);
+                valor_de_variable = valor_de_variable + cabeza.lexema;                
                 cabeza = cabeza.siguiente;
-                cabeza = PrimaryExpresion(cabeza);
-                //cabeza = cabeza.siguiente;
+                cabeza = PrimaryExpresion(cabeza);               
                 cabeza = SecondExpresion2(cabeza);
             }
+            else if (cabeza.toquen == 128)
+            {
+                cabeza = cabeza.siguiente;
+                cabeza = PrimaryExpresion(cabeza);
+                cabeza = SecondExpresion2(cabeza);
+            }            
             else
             {
-                //no se hace nada
-                //cabeza = cabeza.siguiente;               
+                //no se hace nada                               
             }
             return cabeza;
         }
@@ -647,15 +769,18 @@ namespace CompiladorTriangulo
                 if (cabeza.toquen == 100)
                 {                  
                     variables(cabeza.lexema);
-                    //para checar el tipo                    
-                    tipo_variable_principal = tipo_variable(cabeza.lexema);
-                    variable_principal = cabeza.lexema;
+                    
                                       
                     if (simple == false)
                     {
                         errores.Rows.Add(cabeza.toquen,"Variable '" + cabeza.lexema + "' Inexistente ", cabeza.linea,"");
                         simple = true;
+                        esta1 = false;
                     }
+                    //para checar el tipo                    
+                    tipo_variable_principal = tipo_variable(cabeza.lexema);
+                    variable_principal = cabeza.lexema;
+
                     //si es una declaracion
                     if (cabeza.siguiente.toquen == 126)
                     {
@@ -678,7 +803,15 @@ namespace CompiladorTriangulo
                             }
                             else
                             {
-                                INCOMPATIBLE(cabeza);
+                                
+                                if (esta1 == true)
+                                {
+                                    INCOMPATIBLE(cabeza);                                   
+                                }
+                                else if (esta1 == false)
+                                {
+                                    esta1 = true;
+                                }
                                 cabeza = Expresion(cabeza);
 
                                 //para agregar a la lista
@@ -987,7 +1120,11 @@ namespace CompiladorTriangulo
                                 simple = true;
                             }
 
-                            Buscar_var(cabeza.lexema,cabeza.toquen,cabeza.linea);
+                            if (inicia == true)
+                            {
+                                Buscar_var(cabeza.lexema, cabeza.toquen, cabeza.linea);
+                                inicia = false;
+                            }
 
                             cabeza = cabeza.siguiente;
                             //si es un )
@@ -1060,7 +1197,11 @@ namespace CompiladorTriangulo
                                         errores.Rows.Add(cabeza.toquen,"Variable '" + cabeza.lexema + "' Inexistente ", cabeza.linea,"");
                                         simple = true;
                                     }
-                                    Buscar_var(cabeza.lexema,cabeza.toquen,cabeza.linea);
+                                    if (inicia == true)
+                                    {
+                                        Buscar_var(cabeza.lexema, cabeza.toquen, cabeza.linea);
+                                        inicia = false;
+                                    }
                                     cabeza = cabeza.siguiente;
                                     //si es )
                                     if (cabeza.toquen == 123)
@@ -1140,6 +1281,11 @@ namespace CompiladorTriangulo
                         }
                         else
                         {
+                            //si es identificador y viene con <=  <>  >= para checar incompatibilidades que sean iguales
+                            if ((cabeza.toquen==100)&&(cabeza.siguiente.toquen == 109 || cabeza.siguiente.toquen == 110 || cabeza.siguiente.toquen == 109))
+                            {
+                                INCOMPATIBLEIF(cabeza);
+                            }                                                      
                             cabeza = Expresion(cabeza);
 
                             if (cabeza.toquen == 120)
@@ -1154,9 +1300,12 @@ namespace CompiladorTriangulo
                                 }
                                 else
                                 {
-                                    cabeza = Expresion(cabeza);
-                                    //cabeza = cabeza.siguiente;
-                                    //si se genera un comando
+                                    //si es identificador y viene con <  >  no lo deve de aseptar
+                                    if ((cabeza.toquen == 100) && (cabeza.siguiente.toquen == 109 || cabeza.siguiente.toquen == 110 || cabeza.siguiente.toquen == 109))
+                                    {
+                                        INCOMPATIBLEIF(cabeza);
+                                    }
+                                    cabeza = Expresion(cabeza);                                   
                                     //si es )
                                     if (cabeza.toquen == 123)
                                     {
@@ -1297,21 +1446,11 @@ namespace CompiladorTriangulo
                                 //si es end
                                 if (cabeza.toquen == 205)
                                 {
-                                    //para buscar variables
-                                    //Buscar_Var(cabeza.lexema); 
+                                    //para buscar variables                                    
                                     Llenar_tabla();
                                     lista_declarados.Clear();
                                     valor_variable.Clear();
-                                    if (correcto == false)
-                                    {
-                                        break;
-                                    }
-                                    else
-                                    {                                        
-                                        
-                                        MessageBox.Show("Analisis Sintactico Exitoso");
-                                        break;
-                                    }                                    
+                                    break;                                    
                                 }
                                 else
                                 {
@@ -1357,9 +1496,7 @@ namespace CompiladorTriangulo
             }
         }
 
-        #endregion
-
-       
+        #endregion       
 
         #region manipulacion de variables
         public string aux;
@@ -1453,16 +1590,21 @@ namespace CompiladorTriangulo
                     esta = true;
                     break;
                 }
+                else
+                {
+                    esta = false;
+                }
             }
             if (esta == true)
             {
                 esta = false;
+                inicia = true;
             }
             else
             {
                 correcto = false;
                 simple = false;
-                esta = false;
+                esta = false;                
             }
 
         }
@@ -1493,117 +1635,7 @@ namespace CompiladorTriangulo
                 agregar = true;
             }
         }
-        #endregion
-
-        /*
-        #region incompativilidad
-        //para buscar el tipo y checar compativilidad        
-        
-
-        public Boolean incompatible;
-        public Boolean checar_incopativilidad()
-        {            
-            //checar de que tipo es
-            if (tipo_variable_principal == "integer"|| tipo_variable_principal == "Integer"|| tipo_variable_principal == "INTEGER")
-            {
-                incompatible = CASOS_INTEGER();
-            }
-            else if(tipo_variable_principal == "string"|| tipo_variable_principal == "String"|| tipo_variable_principal == "STRING")
-            {
-                incompatible = CASOS_STRING();
-            }
-            else if(tipo_variable_principal == "double"|| tipo_variable_principal == "Double"|| tipo_variable_principal == "DOUBLE")
-            {
-                incompatible = CASOS_DOUBLE();
-            }
-            else if(tipo_variable_principal == "boolean"|| tipo_variable_principal == "Boolean"|| tipo_variable_principal == "BOOLEAN")
-            {
-                incompatible = CASOS_BOOLEAN();
-            }
-
-            return incompatible;
-        }
-
-        public int FRENTE, FINAL,DATO1;
-        /*variables que vamos a usar del metodo de pila que esta declarado abajo
-        
-        
-        public int[] COLA = new int[100];
-        public void inserta_cola(int DATO)
-        {
-            if (FINAL < MAX)
-            {
-                FINAL = FINAL + 1;
-                COLA[FINAL] = DATO;
-                if (FINAL == 1)
-                {
-                    FRENTE = 1;
-                }
-                else
-                {
-                    //mensaje de cola llena
-                }
-            }
-        }
-        public void elimina_cola()
-        {
-            if (FRENTE != 0)
-            {
-                DATO1 = COLA[FRENTE];
-                if (FRENTE == FINAL)
-                {
-                    FRENTE = 0;
-                    FINAL = 0;
-                }
-                else
-                {
-                    FRENTE = FRENTE + 1;
-                }
-            }
-            else
-            {
-                //mensaje de cola vacia
-            }
-        }
-
-        #region INTEGER
-        public Boolean CASOS_INTEGER()
-        {
-            while (FRENTE != 0)
-            {
-                if (DATO1 == 100)
-                {
-                    
-                }
-            }
-            elimina_cola();
-            return incompatible;
-        }
-        #endregion
-
-        #region STRING
-        public Boolean CASOS_STRING()
-        {            
-            return incompatible;            
-        }
-        #endregion
-
-        #region DOUBLE
-        public Boolean CASOS_DOUBLE()
-        {           
-            return incompatible;            
-        }
-        #endregion
-
-        #region BOOLEAN
-        public Boolean CASOS_BOOLEAN()
-        {
-            elimina_cola();
-            return incompatible;            
-        }
-        #endregion
-
-        #endregion*/
+        #endregion       
 
         #region Infix To Postfix
         public Boolean BAND;
