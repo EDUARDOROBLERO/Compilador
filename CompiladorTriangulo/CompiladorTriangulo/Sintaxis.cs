@@ -83,34 +83,34 @@ namespace CompiladorTriangulo
         #region sentencia if y while
         public CrearNodo INCOMPATIBILIDAD1IF(CrearNodo cabeza)
         {
-            string tip1,tip2,operador;
+            string tip1,tip2,lex1,lex2,operador;
             //por si es un operador entre tipos
-            if (cabeza.siguiente.toquen == 109 || cabeza.siguiente.toquen == 110 || cabeza.siguiente.toquen == 109)
+            if (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen<=112||cabeza.siguiente.toquen==129)
             {
                 tip1 = tipo_variable(cabeza.lexema);
+                lex1 = cabeza.lexema;
                 cabeza = cabeza.siguiente;
                 operador = cabeza.lexema;
                 cabeza = cabeza.siguiente;
                 tip2 = tipo_variable(cabeza.lexema);
-                if (tip1 != tip2)
+                lex2 = cabeza.lexema;
+                //si es < || > no permite string o booleano
+                if (operador == "<"||operador==">")
                 {
-                    errores.Rows.Add(cabeza.toquen, "Error con '" + tip1 + "' y '" + tip2 + "'  Deven de ser del  mismo tipo cuando se utiliza el operador '" + operador + "' ", cabeza.linea, "");
+                    if (tip1 == "STRING")
+                    {
+                        errores.Rows.Add(cabeza.toquen, "El operador '" + operador + "' no se puede aplicar en operandos de tipo " + tip1 + " y " + tip2, cabeza.linea, "");
+                    }
                 }
+                
             }
             return cabeza;
         }
         //metodo para verificar las segundas expresiones2
         public CrearNodo INCOMPATIBILIDAD2IF(CrearNodo cabeza)
         {
-            //si es un operador
-            if (cabeza.toquen >= 103 && cabeza.toquen <= 117 || cabeza.toquen == 129)
-            {
-                cabeza = cabeza.siguiente;
-                cabeza = INCOMPATIBILIDAD1IF(cabeza);
-                //cabeza = cabeza.siguiente;
-                cabeza = INCOMPATIBILIDAD2IF(cabeza);
-            }
-            else if (cabeza.toquen == 128)
+            //si es &&           
+            if (cabeza.toquen == 128)
             {
                 cabeza = cabeza.siguiente;
                 cabeza = INCOMPATIBILIDAD1(cabeza);
@@ -1282,7 +1282,7 @@ namespace CompiladorTriangulo
                         else
                         {
                             //si es identificador y viene con <=  <>  >= para checar incompatibilidades que sean iguales
-                            if ((cabeza.toquen==100)&&(cabeza.siguiente.toquen == 109 || cabeza.siguiente.toquen == 110 || cabeza.siguiente.toquen == 109))
+                            if ((cabeza.toquen==100)&& (cabeza.siguiente.toquen >= 110 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
                             {
                                 INCOMPATIBLEIF(cabeza);
                             }                                                      
