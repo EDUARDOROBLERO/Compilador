@@ -1,12 +1,17 @@
 LET 
-VAR A: STRING;  
-VAR B: BOOLEAN;  
-VAR D: STRING;  
+VAR A: INTEGER;
+VAR B: DOUBLE;  
+VAR C: STRING;  
+VAR D: BOOLEAN;  
 IN 
-B:=TRUE;
-A:="STRING";
-FOR( VAR R: STRING; B<=A; A:="CADENA")
+B:=4.5;
+C:="STRING";
+A:=4;
+FOR( VAR R: STRING; B=C && A=B; A++)
 {
-A:=4.4;
+A:=4;
+}
+WHILE(B<=A && A>=B){
+D:=FALSE;
 }
 END

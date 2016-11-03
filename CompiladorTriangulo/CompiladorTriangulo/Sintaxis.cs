@@ -79,30 +79,121 @@ namespace CompiladorTriangulo
             }
             return tipo;
         }
-        
+
+        #region sentencia if y while 2
+        public CrearNodo INCOMPATIBILIDAD1IF2(CrearNodo cabeza)
+        {
+            if (cabeza.toquen == 100)
+            {
+                string tip;
+                string caracter ;
+
+                //verificar el tipo de variable
+                tip = tipo_variable(cabeza.lexema);
+                //nos posicionamos en el caracter
+                cabeza = cabeza.siguiente; 
+                //si es < > <= >= \= <>               
+                if(cabeza.toquen>=107 && cabeza.toquen <= 112)
+                {
+                    
+                    caracter = cabeza.lexema;
+                    errores.Rows.Add(cabeza.toquen,"Error con '"+caracter+"' ,Solo las expresiones de asignacion, incremento o decremento se pueden usar como instruccion", cabeza.linea, "");
+                }
+                //si es ++ --
+                else if (cabeza.toquen == 112 || cabeza.toquen == 113)
+                {
+                    caracter = cabeza.lexema;
+                    if (tip == "STRING" || tip == "BOOLEAN")
+                    {
+                        errores.Rows.Add(cabeza.toquen, "El operador '" + caracter + "' no se puede aplicar al operando del tipo '"+tip+"'", cabeza.linea, "");
+                    }                       
+                }
+                cabeza = cabeza.siguiente;
+            }
+            return cabeza;
+        }
+        //metodo para verificar las segundas expresiones2
+        public CrearNodo INCOMPATIBILIDAD2IF2(CrearNodo cabeza)
+        {
+            //si es &&           
+            if (cabeza.toquen == 128)
+            {
+                cabeza = cabeza.siguiente;
+                cabeza = INCOMPATIBILIDAD1IF2(cabeza);
+                cabeza = INCOMPATIBILIDAD2IF2(cabeza);
+            }
+            else
+            {
+                //no se hace nada
+                //cabeza = cabeza.siguiente;               
+            }
+            return cabeza;
+        }
+        //metodo para verificar segundas expresiones
+        public CrearNodo INCOMPATIBILIDADIF2(CrearNodo cabeza)
+        {
+            cabeza = INCOMPATIBILIDAD1IF2(cabeza);
+            cabeza = INCOMPATIBILIDAD2IF2(cabeza);
+            return cabeza;
+        }
+        //metodo para checar las expreciones
+        public CrearNodo INCOMPATIBLEIF2(CrearNodo cabeza)
+        {
+            cabeza = INCOMPATIBILIDADIF2(cabeza);
+            return cabeza;
+        }
+        #endregion*/
+
+
+
+
         #region sentencia if y while
         public CrearNodo INCOMPATIBILIDAD1IF(CrearNodo cabeza)
         {
-            string tip1,tip2,lex1,lex2,operador;
-            //por si es un operador entre tipos
+            string tip1,tip2,lex1,lex2;
+            int operador;
+            string caracter;
+            //por si es un operador entre tipos            
             if (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen<=112||cabeza.siguiente.toquen==129)
             {
                 tip1 = tipo_variable(cabeza.lexema);
                 lex1 = cabeza.lexema;
                 cabeza = cabeza.siguiente;
-                operador = cabeza.lexema;
+                operador = cabeza.toquen;
+                caracter = cabeza.lexema;
                 cabeza = cabeza.siguiente;
                 tip2 = tipo_variable(cabeza.lexema);
                 lex2 = cabeza.lexema;
-                //si es < || > no permite string o booleano
-                if (operador == "<"||operador==">")
+
+
+                //no se permite string y boolean en < > <= >=
+                if (operador >= 107 && operador<109 ||operador>=110 && operador<=111)
                 {
-                    if (tip1 == "STRING")
+                    if ((tip1 == "STRING"||tip1=="BOOLEAN")&&(tip2 == "STRING" || tip2 == "BOOLEAN"))
                     {
-                        errores.Rows.Add(cabeza.toquen, "El operador '" + operador + "' no se puede aplicar en operandos de tipo " + tip1 + " y " + tip2, cabeza.linea, "");
+                        errores.Rows.Add(cabeza.toquen, "El operador '" + caracter + "' no se puede aplicar en operandos de tipo " + tip1 + " y " + tip2, cabeza.linea, "");
+                    }
+
+                    if((tip1=="INTEGER"||tip1=="DOUBLE") && (tip2 == "STRING" || tip2 == "BOOLEAN"))
+                    {
+                        errores.Rows.Add(cabeza.toquen, "El operador '" + caracter + "' no se puede aplicar en operandos de tipo " + tip1 + " y " + tip2, cabeza.linea, "");                        
                     }
                 }
-                
+
+                //si el operador es \= del mismo tipo
+                if (operador ==112|| operador == 129||operador==109)
+                {
+                    if ((tip1 == "STRING" || tip1 == "BOOLEAN") && (tip2 != tip1))
+                    {
+                        errores.Rows.Add(cabeza.toquen, "El operador '" + caracter + "' no se puede aplicar en operandos de tipo " + tip1 + " y " + tip2, cabeza.linea, "");
+                    }
+
+                    if ((tip1 == "INTEGER" || tip1 == "DOUBLE") && (tip2 == "STRING" || tip2 == "BOOLEAN"))
+                    {
+                        errores.Rows.Add(cabeza.toquen, "El operador '" + caracter + "' no se puede aplicar en operandos de tipo " + tip1 + " y " + tip2, cabeza.linea, "");
+                    }
+                }
+                cabeza = cabeza.siguiente;
             }
             return cabeza;
         }
@@ -113,8 +204,8 @@ namespace CompiladorTriangulo
             if (cabeza.toquen == 128)
             {
                 cabeza = cabeza.siguiente;
-                cabeza = INCOMPATIBILIDAD1(cabeza);
-                cabeza = INCOMPATIBILIDAD2(cabeza);
+                cabeza = INCOMPATIBILIDAD1IF(cabeza);
+                cabeza = INCOMPATIBILIDAD2IF(cabeza);
             }
             else
             {
@@ -479,8 +570,9 @@ namespace CompiladorTriangulo
                         li.valor = valor_de_variable;
                         valor_variable.Add(li);
                     }
-                }                                              
-                else{
+                }                
+                else
+                {
                     if (inicia == true)
                     {
                         Buscar_var(cabeza.lexema, cabeza.toquen, cabeza.linea);
@@ -852,7 +944,7 @@ namespace CompiladorTriangulo
                         #endregion
                     }
                     //si es una expresion
-                    if (cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen <= 117)
+                    if (cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen<109||cabeza.siguiente.toquen>109 && cabeza.siguiente.toquen <= 117)
                     {
                         cabeza = cabeza.siguiente;
                         #region exprecion                
@@ -883,10 +975,19 @@ namespace CompiladorTriangulo
                         }
                         #endregion
                     }
-                    else
+                    //si llega =
+                    if (cabeza.siguiente.toquen == 109)
                     {
+                        cabeza = cabeza.siguiente;
                         error = busca_error.ERROR(521);
                         grierror.Rows.Add(521, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
+                        band = false;
+                        break;
+                    }
+                    else
+                    {
+                        error = busca_error.ERROR(522);
+                        grierror.Rows.Add(522, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                         band = false;
                         break;
                     }
@@ -1044,8 +1145,12 @@ namespace CompiladorTriangulo
                         }
                         else
                         {
-                            cabeza = Expresion(cabeza);
-                            //cabeza = cabeza.siguiente;
+                            //si es identificador y viene con < > <=  <>  >= para checar incompatibilidades que sean iguales
+                            if ((cabeza.toquen == 100||cabeza.toquen==210||cabeza.toquen==211) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
+                            {
+                                INCOMPATIBLEIF(cabeza);
+                            }
+                            cabeza = Expresion(cabeza);                            
                             //si es )
                             if (cabeza.toquen == 123)
                             {
@@ -1281,8 +1386,8 @@ namespace CompiladorTriangulo
                         }
                         else
                         {
-                            //si es identificador y viene con <=  <>  >= para checar incompatibilidades que sean iguales
-                            if ((cabeza.toquen==100)&& (cabeza.siguiente.toquen >= 110 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
+                            //si es identificador y viene con < > <=  <>  >= para checar incompatibilidades que sean iguales
+                            if ((cabeza.toquen==100)&& (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
                             {
                                 INCOMPATIBLEIF(cabeza);
                             }                                                      
@@ -1299,11 +1404,11 @@ namespace CompiladorTriangulo
                                     band = false;
                                 }
                                 else
-                                {
-                                    //si es identificador y viene con <  >  no lo deve de aseptar
-                                    if ((cabeza.toquen == 100) && (cabeza.siguiente.toquen == 109 || cabeza.siguiente.toquen == 110 || cabeza.siguiente.toquen == 109))
+                                {                                    
+                                    //si es identificador o numero y viene con < > <=  <>  >= no lo deve de aseptar
+                                    if ((cabeza.toquen >=100 && cabeza.toquen<=102) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 114 || cabeza.siguiente.toquen == 129))
                                     {
-                                        INCOMPATIBLEIF(cabeza);
+                                        INCOMPATIBLEIF2(cabeza);
                                     }
                                     cabeza = Expresion(cabeza);                                   
                                     //si es )

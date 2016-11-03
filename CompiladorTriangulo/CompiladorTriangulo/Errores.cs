@@ -89,6 +89,11 @@ namespace CompiladorTriangulo
                     error = "se esperaba un tipo de asignacion";
                     break;
 
+                case 522:
+                    error = "se esperaba una asignacion o expresion";
+                    break;
+
+
             }
             return error;
         }
