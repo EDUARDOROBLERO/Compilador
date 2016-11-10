@@ -7,7 +7,7 @@ IN
 B:=4.5;
 C:="STRING";
 A:=4;
-FOR( VAR R: STRING; B=C && A=B; A++)
+FOR( VAR R: STRING; B=A && A=B; A++)
 {
 A:=4;
 }

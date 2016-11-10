@@ -81,6 +81,8 @@ namespace CompiladorTriangulo
         }
 
         #region sentencia if y while 2
+
+
         public CrearNodo INCOMPATIBILIDAD1IF2(CrearNodo cabeza)
         {
             if (cabeza.toquen == 100)
@@ -143,9 +145,6 @@ namespace CompiladorTriangulo
             return cabeza;
         }
         #endregion*/
-
-
-
 
         #region sentencia if y while
         public CrearNodo INCOMPATIBILIDAD1IF(CrearNodo cabeza)
@@ -378,7 +377,7 @@ namespace CompiladorTriangulo
                 }                
             }
             return cabeza;
-        }
+        }       
         //metodo para verificar las segundas expresiones2
         public CrearNodo INCOMPATIBILIDAD2(CrearNodo cabeza)
         {
@@ -946,6 +945,11 @@ namespace CompiladorTriangulo
                     //si es una expresion
                     if (cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen<109||cabeza.siguiente.toquen>109 && cabeza.siguiente.toquen <= 117)
                     {
+
+                        if (cabeza.siguiente.toquen==113||cabeza.siguiente.toquen==114)
+                        {
+                            INCOMPATIBLEIF2(cabeza);
+                        }
                         cabeza = cabeza.siguiente;
                         #region exprecion                
                         if (cabeza.toquen >= 103 && cabeza.toquen <= 117)
@@ -1551,10 +1555,15 @@ namespace CompiladorTriangulo
                                 //si es end
                                 if (cabeza.toquen == 205)
                                 {
-                                    //para buscar variables                                    
+                                    //para buscar variables 
+                                    if (errores.Rows.Count == 0)
+                                    {
+                                        GENERAR_ENSAMBLADOR();
+                                    }
                                     Llenar_tabla();
                                     lista_declarados.Clear();
                                     valor_variable.Clear();
+                                    
                                     break;                                    
                                 }
                                 else
@@ -1601,7 +1610,49 @@ namespace CompiladorTriangulo
             }
         }
 
-        #endregion       
+        #endregion
+
+        #region Ensamblador
+        public string header, codigofinal, declaraciones, final;
+        public void GENERAR_ENSAMBLADOR()
+        {
+                 
+            final = ".CODE .386 BEGIN: MOV AX, @DATA MOV DS, AX CALL COMPI MOV AX, 4C00H INT 21H COMPI  PROC MOV AX, 5 I_ASIGNAR we, AX MOV AX, 20 I_ASIGNAR ab, AX SUMAR c, e,$1 MOV AX, $1 I_ASIGNAR b, AX MULTI 2,-1, $1 MOV AX, $1 I_ASIGNAR enterot, AX MOV AX, 7 I_ASIGNAR entero, AX SUMAR 5, 5,$1 MOV AX, $1 I_ASIGNAR b, AX SUMAR 5, 10,$1 MOV AX, $1 I_ASIGNAR b, AX MOV AX, 0 I_ASIGNAR g, AX MOV AX, r I_ASIGNAR p, AX SUMAR a, n,$1 MOV AX, $1 I_ASIGNAR c, AX RESTA a, b,$1 MOV AX, $1 I_ASIGNAR c, AX MULTI b,-1, $1 MOV AX, $1 I_ASIGNAR c, AX MULTI b,-1, $1 MOV AX, $1 I_ASIGNAR c, AX SUMAR a, h,$1 MOV AX, $1 I_ASIGNAR f, AX RESTA n, h,$1 MOV AX, $1 I_ASIGNAR f, AX S_ASIGNAR natalia, @impreso_2 MULTI b,-1, $1 MOV AX, $1 I_ASIGNAR f, AX MULTI h,-1, $1 MOV AX, $1 I_ASIGNAR f, AX MULTI 9,-1, $1 MOV AX, $1 I_ASIGNAR x, AX MULTI f,-1, $1 MOV AX, $1 I_ASIGNAR r, AX SUMAR b, 55,$1 MOV AX, $1 I_ASIGNAR a, AX MOV AX, jg I_ASIGNAR asd, AX RET COMPI  ENDP INCLUDE subs.sub END BEGIN"+"\n";
+            header = "INCLUDE macros.mac DOSSEG .MODEL SMALL STACK 100h .DATA $BLANCOS DB '$' $MENOS DB '-$' $COUNT DW 0 $NEGATIVO DB  0 $BUFFER DB  8   DUP('$') $BUFFERTEMP DB 8   DUP('$') $LISTAPAR LABEL BYTE $LONGMAX DB 255 $TOTCAR DB ?  $INTRODUCIDOS DB 255 DUP('$') $S_TEMP DB  255 DUP('$'); STRING TEMPORAL  $I_TEMP DW  0000H; INT TEMPORAL  $CONCAT DB  255 DUP('$') $1     DW  0000H $2     DW  0000H $3     DW  0000H "+"\n";
+
+            for (int i = 0; i < lista_declarados.Count; i++)
+            {
+                /*doubles o enteros se declaran asi
+                 w	 DW 	 ?\n 
+                  we	 DW 	 ?\n 
+                  kkk	 DW 	 ?\n 
+                  asd	 DW 	 ?\n 
+                  jg	 DW 	 ?\n 
+                */
+                if (lista_declarados[i].tipo=="INTEGER"|| lista_declarados[i].tipo == "DOUBLE")
+                {
+                    declaraciones += lista_declarados[i].lexe+ "	 DW 	 ?"+"\n";
+                }
+
+                /*cadenas
+                 m	 DB 	 255 	 DUP('$') 
+                 hazael	 DB 	 255 	 DUP('$') 
+                */
+                if (lista_declarados[i].tipo == "STRING")
+                {
+                    declaraciones += lista_declarados[i].lexe + "	 DB 	 255 	 DUP('$')"+"\n";
+                }
+            }
+            codigofinal =header+declaraciones+final;
+            //guardar el codigo generado           7
+            System.IO.StreamWriter file = new System.IO.StreamWriter("C:/Compilador/CompiladorTriangulo/CompiladorTriangulo/ensamblador.txt");
+            file.WriteLine(codigofinal);
+
+            file.Close();
+        }
+
+
+        #endregion
 
         #region manipulacion de variables
         public string aux;
