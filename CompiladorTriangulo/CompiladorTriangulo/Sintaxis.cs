@@ -1508,6 +1508,7 @@ namespace CompiladorTriangulo
         {
             lista_declarados.Clear();
             valor_variable.Clear();
+            conteo = 0;
             while (cabeza!=null)
             {
                 #region analizador
@@ -1613,44 +1614,46 @@ namespace CompiladorTriangulo
         #endregion
 
         #region Ensamblador
-        public string header, codigofinal, declaraciones, final;
+        //variables
+        public string header, codigofinal, declaraciones,declaracionesstring,impresionesstring, final;
+        public int conteo = 0;
         public void GENERAR_ENSAMBLADOR()
         {
-                 
-            final = ".CODE .386 BEGIN: MOV AX, @DATA MOV DS, AX CALL COMPI MOV AX, 4C00H INT 21H COMPI  PROC MOV AX, 5 I_ASIGNAR we, AX MOV AX, 20 I_ASIGNAR ab, AX SUMAR c, e,$1 MOV AX, $1 I_ASIGNAR b, AX MULTI 2,-1, $1 MOV AX, $1 I_ASIGNAR enterot, AX MOV AX, 7 I_ASIGNAR entero, AX SUMAR 5, 5,$1 MOV AX, $1 I_ASIGNAR b, AX SUMAR 5, 10,$1 MOV AX, $1 I_ASIGNAR b, AX MOV AX, 0 I_ASIGNAR g, AX MOV AX, r I_ASIGNAR p, AX SUMAR a, n,$1 MOV AX, $1 I_ASIGNAR c, AX RESTA a, b,$1 MOV AX, $1 I_ASIGNAR c, AX MULTI b,-1, $1 MOV AX, $1 I_ASIGNAR c, AX MULTI b,-1, $1 MOV AX, $1 I_ASIGNAR c, AX SUMAR a, h,$1 MOV AX, $1 I_ASIGNAR f, AX RESTA n, h,$1 MOV AX, $1 I_ASIGNAR f, AX S_ASIGNAR natalia, @impreso_2 MULTI b,-1, $1 MOV AX, $1 I_ASIGNAR f, AX MULTI h,-1, $1 MOV AX, $1 I_ASIGNAR f, AX MULTI 9,-1, $1 MOV AX, $1 I_ASIGNAR x, AX MULTI f,-1, $1 MOV AX, $1 I_ASIGNAR r, AX SUMAR b, 55,$1 MOV AX, $1 I_ASIGNAR a, AX MOV AX, jg I_ASIGNAR asd, AX RET COMPI  ENDP INCLUDE subs.sub END BEGIN"+"\n";
-            header = "INCLUDE macros.mac DOSSEG .MODEL SMALL STACK 100h .DATA $BLANCOS DB '$' $MENOS DB '-$' $COUNT DW 0 $NEGATIVO DB  0 $BUFFER DB  8   DUP('$') $BUFFERTEMP DB 8   DUP('$') $LISTAPAR LABEL BYTE $LONGMAX DB 255 $TOTCAR DB ?  $INTRODUCIDOS DB 255 DUP('$') $S_TEMP DB  255 DUP('$'); STRING TEMPORAL  $I_TEMP DW  0000H; INT TEMPORAL  $CONCAT DB  255 DUP('$') $1     DW  0000H $2     DW  0000H $3     DW  0000H "+"\n";
 
+            declaraciones = "";
+            declaracionesstring = "";
+            header = "INCLUDE macros.mac DOSSEG .MODEL SMALL STACK 100h .DATA $BLANCOS DB '$' \n$MENOS DB '-$' $COUNT DW 0 \n$NEGATIVO DB  0 \n$BUFFER DB  8   DUP('$') \n$BUFFERTEMP DB 8   DUP('$') \n$LISTAPAR LABEL BYTE \n$LONGMAX DB 255 $TOTCAR DB ?  \n$INTRODUCIDOS DB 255 DUP('$') \n$S_TEMP DB  255 DUP('$'); STRING TEMPORAL  \n$I_TEMP DW  0000H; INT TEMPORAL  \n$CONCAT DB  255 DUP('$') \n$1     DW  0000H \n$2     DW  0000H \n$3     DW  0000H \n\n\n";
+            final = ".CODE \n.386 \nBEGIN: \n\tMOV AX, @DATA \n\tMOV DS, AX \n\tCALL COMPI \n\tMOV AX, 4C00H \n\tINT 21H \n\tCOMPI  PROC \n\tMOV AX, 5 \n\tI_ASIGNAR we, AX \n\tMOV AX, 20 \n\tI_ASIGNAR ab, AX \n\tSUMAR c, e,$1 \n\tMOV AX, $1 \n\tI_ASIGNAR b, AX \n\tMULTI 2,-1, $1 \n\tMOV AX, $1 \n\tI_ASIGNAR enterot, AX \n\tMOV AX, 7 \n\tI_ASIGNAR entero, AX \n\tSUMAR 5, 5,$1 \n\tMOV AX, $1 \n\tI_ASIGNAR b, AX \n\tSUMAR 5, 10,$1 \n\tMOV AX, $1 \n\tI_ASIGNAR b, AX \n\tMOV AX, 0 \n\tI_ASIGNAR g, AX \n\tMOV AX, r \n\tI_ASIGNAR p, AX \n\tSUMAR a, n,$1 \n\tMOV AX, $1 \n\tI_ASIGNAR c, AX \n\tRESTA a, b,$1 \n\tMOV AX, $1 \n\tI_ASIGNAR c, AX \n\tMULTI b,-1, $1 \n\tMOV AX, $1 \n\tI_ASIGNAR c, AX \n\tMULTI b,-1, $1 \n\tMOV AX, $1 \n\tI_ASIGNAR c, AX \n\tSUMAR a, h,$1 \n\tMOV AX, $1 \n\tI_ASIGNAR f, AX \n\tRESTA n, h,$1 \n\tMOV AX, $1 \n\tI_ASIGNAR f, AX \n\tS_ASIGNAR natalia, @impreso_2 \n\tMULTI b,-1, $1 \n\tMOV AX, $1 \n\tI_ASIGNAR f, AX \n\tMULTI h,-1, $1 \n\tMOV AX, $1 \n\tI_ASIGNAR f, AX \n\tMULTI 9,-1, $1 \n\tMOV AX, $1 \n\tI_ASIGNAR x, AX \n\tMULTI f,-1, $1 \n\tMOV AX, $1 \n\tI_ASIGNAR r, AX \n\tSUMAR b, 55,$1 \n\tMOV AX, $1 \n\tI_ASIGNAR a, AX \n\tMOV AX, jg \n\tI_ASIGNAR asd, AX \n\tRET COMPI  \n\tENDP INCLUDE subs.sub \nEND BEGIN" + "\n";
             for (int i = 0; i < lista_declarados.Count; i++)
             {
-                /*doubles o enteros se declaran asi
-                 w	 DW 	 ?\n 
-                  we	 DW 	 ?\n 
-                  kkk	 DW 	 ?\n 
-                  asd	 DW 	 ?\n 
-                  jg	 DW 	 ?\n 
+                /*doubles o enteros se declaran asi                 
+                  we	 DW 	 ?\n                   
                 */
-                if (lista_declarados[i].tipo=="INTEGER"|| lista_declarados[i].tipo == "DOUBLE")
+                if (lista_declarados[i].tipo=="INTEGER"|| lista_declarados[i].tipo == "DOUBLE"|| lista_declarados[i].tipo == "BOOLEAN")
                 {
-                    declaraciones += lista_declarados[i].lexe+ "	 DW 	 ?"+"\n";
+                    declaraciones += lista_declarados[i].lexe+ "	 DW 	 ?\n";
                 }
 
-                /*cadenas
-                 m	 DB 	 255 	 DUP('$') 
+                /*cadenas                 
                  hazael	 DB 	 255 	 DUP('$') 
                 */
                 if (lista_declarados[i].tipo == "STRING")
                 {
-                    declaraciones += lista_declarados[i].lexe + "	 DB 	 255 	 DUP('$')"+"\n";
+                    declaracionesstring += lista_declarados[i].lexe + "	 DB 	 255 	 DUP('$')\n";
+                    Buscar_var2(lista_declarados[i].lexe);
                 }
             }
-            codigofinal =header+declaraciones+final;
-            //guardar el codigo generado           7
+
+            declaraciones += "\n\n";
+            declaracionesstring += "\n\n";
+            impresionesstring += "\n\n";
+
+            codigofinal =header+declaraciones+declaracionesstring+impresionesstring+final;
+            //guardar el codigo generado
             System.IO.StreamWriter file = new System.IO.StreamWriter("C:/Compilador/CompiladorTriangulo/CompiladorTriangulo/ensamblador.txt");
             file.WriteLine(codigofinal);
-
             file.Close();
         }
-
 
         #endregion
 
@@ -1722,6 +1725,11 @@ namespace CompiladorTriangulo
                         valor = false;
                         break;
                     }
+                    /*if(valor_variable[j].valor != "")
+                    {
+                        impresionesstring += "@impreso" + conteo + " DB '" + valor_variable[j].valor + "','$' \n";
+                        conteo++;
+                    }*/
                     esta = true;
                     break;
                 }
@@ -1735,6 +1743,29 @@ namespace CompiladorTriangulo
                 errores.Rows.Add(toquen, "Variable '" + lexema + "' No Inicializada ", linea, "");
                 correcto = false;
             }
+        }
+
+        public void Buscar_var2(string lexema)
+        {
+            int val = 0;
+            for (int j = 0; j < valor_variable.Count; j++, val = j)
+            {
+                if (valor_variable[j].lexm == lexema)
+                {
+                    
+                    if(valor_variable[j].valor != "")
+                    {
+                        impresionesstring += "@impreso" + conteo + " DB '" + valor_variable[j].valor + "','$' \n";
+                        conteo++;
+                    }
+                    esta = true;
+                    break;
+                }
+                else
+                {
+                    esta = false;
+                }
+            }            
         }
         //metodos para burcar si esta o no la variable declarada
         private void variables(string Plexema)
