@@ -1658,6 +1658,16 @@ namespace CompiladorTriangulo
         #endregion
 
         #region manipulacion de variables
+
+        //metodo para quitar las commillas en los string
+        public string QUITA_COMILLAS(string texto)
+        {
+            string b;
+            int t = texto.Length;
+            t = t - 2;
+            b = texto.Substring(1, t);
+            return b;
+        }
         public string aux;
         //para llenar la tabla de variables con sus valores
         public void Llenar_tabla()
@@ -1673,7 +1683,11 @@ namespace CompiladorTriangulo
                     lex1 = valor_variable[j].lexm;
                     if (lex == lex1)
                     {
-                        aux = valor_variable[j].valor; ;
+                        aux = valor_variable[j].valor; 
+                        if (lista_declarados[i].tipo == "STRING")
+                        {
+                            aux = QUITA_COMILLAS(valor_variable[j].valor);
+                        }
                         valor = true;
                     }
                     else
@@ -1684,8 +1698,7 @@ namespace CompiladorTriangulo
                 if (valor == true)
                 {
                     lex = lista_declarados[i].lexe;
-                    tip = lista_declarados[i].tipo;
-
+                    tip = lista_declarados[i].tipo;                                        
                     declarados.Rows.Add(tip, lex, aux);
                     aux = "";
                 }
@@ -1748,23 +1761,18 @@ namespace CompiladorTriangulo
         public void Buscar_var2(string lexema)
         {
             int val = 0;
+            string cadena;
             for (int j = 0; j < valor_variable.Count; j++, val = j)
             {
                 if (valor_variable[j].lexm == lexema)
                 {
-                    
-                    if(valor_variable[j].valor != "")
+                    if (valor_variable[j].valor != "")
                     {
-                        impresionesstring += "@impreso" + conteo + " DB '" + valor_variable[j].valor + "','$' \n";
+                        cadena = QUITA_COMILLAS(valor_variable[j].valor);
+                        impresionesstring += "@impreso" + conteo + " DB '" + cadena + "','$' \n";
                         conteo++;
                     }
-                    esta = true;
-                    break;
-                }
-                else
-                {
-                    esta = false;
-                }
+                }                 
             }            
         }
         //metodos para burcar si esta o no la variable declarada

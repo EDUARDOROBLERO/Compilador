@@ -20,12 +20,12 @@ D	 DW 	 ?
 
 
 C	 DB 	 255 	 DUP('$')
-EDU	 DB 	 255 	 DUP('$')
+G	 DB 	 255 	 DUP('$')
 R	 DB 	 255 	 DUP('$')
 
 
-@impreso0 DB '"STRING"','$' 
-@impreso1 DB '"PEDRO"','$' 
+@impreso0 DB 'STRING','$' 
+@impreso1 DB 'EDUARDO','$' 
 
 
 .CODE 
