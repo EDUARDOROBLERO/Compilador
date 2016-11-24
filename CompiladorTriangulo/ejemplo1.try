@@ -1,0 +1,9 @@
+LET 
+VAR X: INTEGER;
+VAR Y: INTEGER;
+VAR Z: INTEGER;
+IN 
+X:=13;
+Y:=5;
+Z:=X+Y-4*3;
+END
