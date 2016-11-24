@@ -1666,28 +1666,64 @@ namespace CompiladorTriangulo
                                 tipo_variable_principal = tipo_variable(cabeza.lexema);                                
                                 if (tipo_variable_principal == "STRING")
                                 {
-                                    escribir = "\n\tS_COUNT " + Buscar_var3(cabeza.lexema)+"\n";
+                                    escribir = "\n\tS_COUT " + Buscar_var3(cabeza.lexema)+"\n";
+                                    cabeza = cabeza.siguiente;
                                     complemento += escribir;
                                 }
                                 if(tipo_variable_principal == "INTEGER"|| tipo_variable_principal == "DOUBLE")
                                 {
-                                    escribir = "\n\tI_COUNT " + Buscar_var3(cabeza.lexema) + "\n";
+                                    escribir = "\n\tI_COUT " + Buscar_var3(cabeza.lexema) + "\n";
+                                    cabeza = cabeza.siguiente;
                                     complemento += escribir;
                                 }                                                              
 
                             }
                             if (cabeza.toquen == 127)
                             {
-                                escribir = "\n\tS_COUNT " + cabeza.lexema + "\n";
-                                complemento += escribir;
+                                while (cabeza.toquen == 127)
+                                {
+                                    escribir = "\n\tS_COUT " + cabeza.lexema + "";
+                                    //si viene una suma
+                                    if (cabeza.siguiente.toquen == 103)
+                                    {
+                                        cabeza = cabeza.siguiente;
+                                        while (cabeza.toquen == 103)
+                                        {
+                                            cabeza = cabeza.siguiente;
+                                            //cabeza = cabeza.siguiente;
+                                            //si viene una cadena
+                                            if (cabeza.toquen == 127)
+                                            {
+                                                escribir += " " + cabeza.lexema;
+                                                cabeza = cabeza.siguiente;
+                                            }
+                                            else
+                                            {                                            
+                                                break;
+                                            }
+
+                                        }
+                                        if (cabeza.toquen != 103)
+                                        {
+                                            escribir += "\n";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        escribir += "\n";
+                                        cabeza = cabeza.siguiente;
+                                        break;
+                                    }
+                                }
+                                complemento += escribir;                                
                             }
                             if (cabeza.toquen == 101 || cabeza.toquen == 102)
                             {
-                                escribir = "\n\tI_COUNT " + cabeza.lexema + "\n";
+                                escribir = "\n\tI_COUT " + cabeza.lexema + "\n";
+                                cabeza = cabeza.siguiente;
                                 complemento += escribir;
                             }
-                            
-                            cabeza = cabeza.siguiente;
+                                                        
                         }
                         if (cabeza.toquen ==123)
                         {

@@ -59,6 +59,12 @@ BEGIN:
 
 	S_ASIGNAR C $TmpASM_0
 
+	S_COUT "PEDRO"
+
+	I_COUT 4.5
+
+	I_COUT 2
+
 	MOV AX, 4 
 	I_ASIGNAR A, AX
 
