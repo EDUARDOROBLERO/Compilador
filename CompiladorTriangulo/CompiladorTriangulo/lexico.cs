@@ -118,7 +118,7 @@ namespace CompiladorTriangulo
         {            
             do
             {
-                if (caracter == '\n' || caracter == '\r')
+                if (caracter == '\n' && edo!=13|| caracter == '\r')
                 {
                     lexema = "";
                     edo = 0;
@@ -201,7 +201,7 @@ namespace CompiladorTriangulo
                     puntero += 1;
                     continue;
                 }
-                if (caracter == '\n' || caracter == '\r'||caracter==32)
+                if (caracter == 32 && edo!=13 || caracter == '\r')
                 {
                     puntero += 1;
                     continue;

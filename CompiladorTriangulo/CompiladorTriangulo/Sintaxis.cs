@@ -58,10 +58,12 @@ namespace CompiladorTriangulo
 
         #region compilador
         public string var1, var2;
+        public string concatenado;
+        int string_principal, string_final;
+        bool ed = false;
         public CrearNodo COMPILADOR1(CrearNodo cabeza)
         {
-
-            // si es identificador
+            // si es identificador            
             if (cabeza.toquen == 100)
             {
                 //si es ++ ó --
@@ -78,11 +80,21 @@ namespace CompiladorTriangulo
                     if (cabeza.toquen == 114)
                     {
                         de = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tRESTA " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
-                        complemento += au;
+                        complemento += de;
                         cabeza = cabeza.siguiente;
                     }
                 }
-                while(cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen <= 117)
+                else if (cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen <= 117)
+                {
+                    bandera_posfija = true;                                       
+                }
+                else if (cabeza.siguiente.toquen == 120)
+                {
+                    asig = "\n\tMOV AX, " + cabeza.lexema + " \n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                    complemento += asig;
+                    cabeza = cabeza.siguiente;
+                }
+                while (cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen <= 117 && bandera_posfija == false)
                 {
                     var1 = cabeza.lexema;
                     
@@ -154,20 +166,55 @@ namespace CompiladorTriangulo
                     }
                 }
 
+
             }
             //si es un numero o decimal
             else if (cabeza.toquen == 101|| cabeza.toquen == 102)
             {
-                asig = "\n\tMOV AX, " + cabeza.lexema + " \n\tI_ASIGNAR " + variable_principal + ", AX\n";                
+                asig = "\n\tMOV AX, " + cabeza.lexema + " \n\tI_ASIGNAR " + variable_principal + ", AX\n";
                 complemento += asig;
                 cabeza = cabeza.siguiente;
             }           
             //si es una cadena
             else if (cabeza.toquen == 127)
-            {                
-                asig = "\n\tS_ASIGNAR "+ variable_principal + " $TmpASM_" + conteo1 + "\n";
-                complemento += asig;
-                conteo1++;
+            {
+                //si es una cadena y se estan sumando                
+                if (cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen <= 117)
+                {                    
+                    ASIGNACIONES_STRING += "@TmpASM_" + conteo + " DB '" + QUITA_COMILLAS(cabeza.lexema) + "','$' \n";
+                    concatenado += QUITA_COMILLAS(cabeza.lexema);
+                    cabeza = cabeza.siguiente;
+                    if (ed == false)
+                    {
+                        string_principal = conteo;
+                        ed = true;
+                    }                                    
+                    if (cabeza.toquen == 120)
+                    {
+                        string_final = conteo;                        
+                        conteo++;
+                    }
+                    else if(cabeza.toquen >= 103 && cabeza.toquen <= 117)
+                    {
+                        cabeza = cabeza.siguiente;
+                        conteo++;
+                        cabeza=COMPILADOR1(cabeza);                        
+                    }                    
+                }else if (string_principal != -1)
+                {
+                    ASIGNACIONES_STRING += "@TmpASM_" + conteo + " DB '" + QUITA_COMILLAS(cabeza.lexema) + "','$' \n";
+                    concatenado += QUITA_COMILLAS(cabeza.lexema);
+                    string_final = conteo;
+                    conteo++;
+                    cabeza = cabeza.siguiente;
+                }                
+                else
+                {                    
+                    asig = "\n\tS_ASIGNAR " + variable_principal + " $TmpASM_" + conteo1 + "\n";
+                    concatenado += QUITA_COMILLAS(cabeza.lexema);
+                    complemento += asig;
+                    conteo1++;
+                }                    
             }
             //si es un caracter
             else if (cabeza.toquen == 128)
@@ -228,8 +275,7 @@ namespace CompiladorTriangulo
                             cabeza = COMPILADOR1(cabeza);
                         }
                     }
-                }               
-                
+                }                               
             }
             //si es true o false
             else if (cabeza.toquen == 210 || cabeza.toquen == 211)
@@ -456,29 +502,9 @@ namespace CompiladorTriangulo
 
         #region asignaciones
         public CrearNodo INCOMPATIBILIDAD1(CrearNodo cabeza)
-        {            
-            //si es integer
-            if (cabeza.toquen == 214)
-            {                
-                cabeza = cabeza.siguiente;
-            }
-            //si es char
-            else if (cabeza.toquen == 215)
-            {
-                cabeza = cabeza.siguiente;
-            }
-            //si es string
-            else if (cabeza.toquen == 216)
-            {
-                cabeza = cabeza.siguiente;
-            }
-            //si es double
-            else if (cabeza.toquen == 218)
-            {
-                cabeza = cabeza.siguiente;
-            }
+        {                                  
             //si es identoificador
-            else if (cabeza.toquen == 100)
+            if (cabeza.toquen == 100)
             {
                 string tip;
 
@@ -753,6 +779,12 @@ namespace CompiladorTriangulo
                 valor_de_variable = valor_de_variable + cabeza.lexema;
                 //inserta_cola(cabeza.toquen);
                 cabeza = cabeza.siguiente;
+            }
+            else if (cabeza.toquen == 301)
+            {
+                cabeza = cabeza.siguiente;
+                cabeza = cabeza.siguiente;
+                cabeza = cabeza.siguiente;              
             }
             //si es char
             else if (cabeza.toquen == 215)
@@ -1116,8 +1148,7 @@ namespace CompiladorTriangulo
                 //si es un identificador            
                 if (cabeza.toquen == 100)
                 {                  
-                    variables(cabeza.lexema);
-                    
+                    variables(cabeza.lexema);                    
                                       
                     if (simple == false)
                     {
@@ -1143,7 +1174,59 @@ namespace CompiladorTriangulo
                         cabeza = cabeza.siguiente;
                         //si es := 
                         #region declaracion
-                        if (cabeza.toquen == 126)
+                        //si lo que sigue es leer
+                        if (cabeza.siguiente.toquen == 301)
+                        {
+                            //avanzamos el leer
+                            cabeza = cabeza.siguiente;
+                            //para situarlo en (
+                            cabeza = cabeza.siguiente;
+                            //si es (
+                            if (cabeza.toquen == 122)
+                            {
+                                cabeza = cabeza.siguiente;
+                                if (cabeza.toquen == 123)
+                                {
+                                    cabeza = cabeza.siguiente;
+                                    //si es ;
+                                    if (cabeza.toquen == 120)
+                                    {
+                                        cabeza = cabeza.siguiente;
+                                        if (tipo_variable_principal == "INTEGER" || tipo_variable_principal == "DOUBLE")
+                                        {
+                                            complemento += "\n\tI_CIN " + variable_principal;
+                                        }
+                                        else
+                                        {
+                                            errores.Rows.Add(cabeza.toquen, "Error con '" + cabeza.lexema + "' " + "Comando no aplicable'" + tipo_variable_principal + "' en '" + "" + "' ", cabeza.linea, "");
+                                        }
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        error = busca_error.ERROR(511);
+                                        grierror.Rows.Add(511, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
+                                        band = false;
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    error = busca_error.ERROR(516);
+                                    grierror.Rows.Add(516, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
+                                    band = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                error = busca_error.ERROR(514);
+                                grierror.Rows.Add(514, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
+                                band = false;
+                                break;
+                            }                            
+                        }
+                        else if (cabeza.toquen == 126)
                         {                            
                             cabeza = cabeza.siguiente;
                             //si no se genera una expresion
@@ -1155,8 +1238,7 @@ namespace CompiladorTriangulo
                                 break;
                             }
                             else
-                            {
-                                
+                            {                                
                                 if (esta1 == true)
                                 {
                                     COMP(cabeza);
@@ -1165,6 +1247,30 @@ namespace CompiladorTriangulo
                                         complemento += "\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
                                         var1 = "";
                                         var2 = "";
+                                    }
+                                    //si se da este caso es que hubo mas de varias concatenaciones
+                                    if (string_principal != -1)
+                                    {
+                                        for(int i = string_principal; string_principal <= string_final; string_principal++)
+                                        {
+                                            //en esta parte se va a concatenar
+                                            if (string_principal == string_final)
+                                            {
+                                                
+                                            }
+                                            else if (i == string_principal)
+                                            {
+                                                complemento += "\n\tCONCATENAR @TmpASM_" + string_principal + ", @TmpASM_" + (string_principal + 1) + ",$1";
+                                            }
+                                            else
+                                            {
+                                                complemento += "\n\tCONCATENAR $1, @TmpASM_" + (string_principal + 1) + ",$1";
+                                            }                                            
+                                        }
+                                        string_principal = -1;
+                                        string_final = -1;
+                                        complemento += "\n\tMOV AX, $1 ,\n\tS_ASIGNAR " + variable_principal + ", AX";
+                                        ed = false;
                                     }
                                     INCOMPATIBLE(cabeza);                                                                       
                                 }
@@ -1175,10 +1281,200 @@ namespace CompiladorTriangulo
                                 cabeza = Expresion(cabeza);
 
                                 //para agregar a la lista
-                                li.valor = valor_de_variable;
-                                valor_variable.Add(li);
-
+                                if (tipo_variable_principal == "STRING")
+                                {
+                                    li.valor = concatenado;
+                                    valor_variable.Add(li);
+                                    concatenado = "";
+                                }
+                                else
+                                {
+                                    li.valor = valor_de_variable;
+                                    valor_variable.Add(li);
+                                }                                
+                               
+                                #region pos                                
+                                //pasar a posfijo y asignar
                                 
+                                if (bandera_posfija==true)
+                                {
+                                    bandera_posfija = false;
+                                    TOPE = 0;
+                                    S = 1;
+                                    OP = 0;
+                                    postfix(valor_de_variable);
+                                    puntero = 0;
+                                    MAX = postfijo.Length;
+                                    var1 = "";
+                                    var2 = "";
+                                    //DATO = caracter.ToString();
+                                    do
+                                    {
+                                        
+                                        //si es un numero o letra
+                                        
+                                        caracter = postfijo[puntero];
+                                        if ((char.IsLetterOrDigit(caracter))||caracter==32)
+                                        {
+                                            if (caracter == 32)
+                                            {
+                                                puntero++;
+                                            }                                                                                        
+                                            else
+                                            {
+                                                DATO = caracter.ToString();
+                                                pone2();
+                                                puntero++;
+                                            }
+                                        }
+                                        //si es una suma
+                                        else if (caracter == '+')
+                                        {
+                                            while (true)
+                                            {
+                                                if (OP <= 2)
+                                                {
+                                                    OP++;
+                                                    quita2();
+                                                }
+                                                if (OP == 1)
+                                                {
+                                                    var2 = DATO;
+                                                }
+                                                if (OP == 2)
+                                                {
+                                                    var1 = DATO;                                                    
+                                                    break;
+                                                }                                                
+                                                if (TOPE == -1)
+                                                {
+                                                    TOPE = 0;
+                                                    break;
+                                                }
+                                            }
+                                            complemento += "\n\tSUMAR " + var1 + ", " + var2 + ",$" + S + "\n";
+                                            DATO = "$" + S.ToString();
+                                            pone2();
+                                            var1 = "";
+                                            var2 = "";
+                                            OP = 0;
+                                            S++;
+                                            puntero++;
+                                        }
+                                        //si es una resta
+                                        else if (caracter == '-')
+                                        {
+                                            while (true)
+                                            {
+                                                if (OP <= 2)
+                                                {
+                                                    OP++;
+                                                    quita2();
+                                                }
+                                                if (OP == 1)
+                                                {
+                                                    var2 = DATO;
+                                                }
+                                                if (OP == 2)
+                                                {
+                                                    var1 = DATO;
+                                                    break;
+                                                }
+                                                if (TOPE == -1)
+                                                {
+                                                    TOPE = 0;
+                                                    break;
+                                                }
+                                            }
+                                            complemento += "\n\tRESTA " + var1 + ", " + var2 + ",$" + S + "\n";
+                                            DATO = "$" + S.ToString();
+                                            pone2();
+                                            var1 = "";
+                                            var2 = "";
+                                            OP = 0;
+                                            S++;
+                                            puntero++;                                                                              
+                                        }
+                                        //si es una multiplicacion
+                                        else if (caracter == '*')
+                                        {
+                                            while (true)
+                                            {
+                                                if (OP <= 2)
+                                                {
+                                                    OP++;
+                                                    quita2();
+                                                }
+                                                if (OP == 1)
+                                                {
+                                                    var2 = DATO;
+                                                }
+                                                if (OP == 2)
+                                                {
+                                                    var1 = DATO;
+                                                    break;
+                                                }
+                                                if (TOPE == -1)
+                                                {
+                                                    TOPE = 0;
+                                                    break;
+                                                }
+                                            }
+                                            complemento += "\n\tMULTI " + var1 + ", " + var2 + ",$" + S + "\n";
+                                            DATO = "$" + S.ToString();
+                                            pone2();
+                                            var1 = "";
+                                            var2 = "";
+                                            OP = 0;
+                                            S++;
+                                            puntero++;
+                                        }
+                                        //si es una divicion
+                                        else if (caracter == '/')
+                                        {
+                                            while (true)
+                                            {
+                                                if (OP <= 2)
+                                                {
+                                                    OP++;
+                                                    quita2();
+                                                }
+                                                if (OP == 1)
+                                                {
+                                                    var2 = DATO;
+                                                }
+                                                if (OP == 2)
+                                                {
+                                                    var1 = DATO;
+                                                    break;
+                                                }
+                                                if (TOPE == -1)
+                                                {
+                                                    TOPE = 0;
+                                                    break;
+                                                }
+                                            }
+                                            complemento += "\n\tDIVIDE " + var1 + ", " + var2 + ",$" + S + "\n";
+                                            DATO = "$" + S.ToString();
+                                            pone2();
+                                            var1 = "";
+                                            var2 = "";
+                                            OP = 0;
+                                            S++;
+                                            puntero++;
+                                        }                                       
+                                    } while (postfijo.Length > puntero);
+
+                                    quita2();
+                                    complemento += "\n\tMOV AX, " + DATO + "\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                                    S = 1;
+
+                                }
+                                
+                                #endregion
+
+                                //.......................
+
                                 //checar_incopativilidad();                                
                                 //---------------------------
 
@@ -1640,9 +1936,7 @@ namespace CompiladorTriangulo
                     }
                 }
                 #endregion
-
-                #region CHECAR
-                
+                               
                 #region escribir
                 if (cabeza.toquen == 300)
                 {
@@ -1655,7 +1949,7 @@ namespace CompiladorTriangulo
                             if (cabeza.toquen == 100)
                             {
                                 variables(cabeza.lexema);
-
+                                variable_principal = cabeza.lexema;
                                 if (simple == false)
                                 {
                                     errores.Rows.Add(cabeza.toquen, "Variable '" + cabeza.lexema + "' Inexistente ", cabeza.linea, "");
@@ -1666,13 +1960,13 @@ namespace CompiladorTriangulo
                                 tipo_variable_principal = tipo_variable(cabeza.lexema);                                
                                 if (tipo_variable_principal == "STRING")
                                 {
-                                    escribir = "\n\tS_COUT " + Buscar_var3(cabeza.lexema)+"\n";
+                                    escribir = "\n\tS_COUT " + variable_principal+"\n";
                                     cabeza = cabeza.siguiente;
                                     complemento += escribir;
                                 }
                                 if(tipo_variable_principal == "INTEGER"|| tipo_variable_principal == "DOUBLE")
                                 {
-                                    escribir = "\n\tI_COUT " + Buscar_var3(cabeza.lexema) + "\n";
+                                    escribir = "\n\tI_COUT " + variable_principal + "\n";
                                     cabeza = cabeza.siguiente;
                                     complemento += escribir;
                                 }                                                              
@@ -1758,57 +2052,6 @@ namespace CompiladorTriangulo
                         break;
                     }
                 }
-                #endregion
-
-                #region leer
-                if (cabeza.toquen == 301)
-                {
-                    cabeza = cabeza.siguiente;
-                    if (cabeza.toquen == 122)
-                    {
-                        cabeza = cabeza.siguiente;
-                        while (cabeza.toquen == 100)
-                        {
-                            leer += cabeza.lexema;
-                            cabeza = cabeza.siguiente;
-
-                        }
-                        if (cabeza.toquen == 123)
-                        {
-                            cabeza = cabeza.siguiente;
-                            //si es ;
-                            if (cabeza.toquen == 120)
-                            {
-                                cabeza = cabeza.siguiente;
-                                break;
-                            }
-                            else
-                            {
-                                error = busca_error.ERROR(511);
-                                grierror.Rows.Add(511, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
-                                band = false;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            error = busca_error.ERROR(516);
-                            grierror.Rows.Add(516, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
-                            band = false;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        error = busca_error.ERROR(514);
-                        grierror.Rows.Add(514, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
-                        band = false;
-                        break;
-                    }
-                }
-                #endregion
-
-                
                 #endregion
 
                 #region For
@@ -1953,6 +2196,8 @@ namespace CompiladorTriangulo
             conteo01 =0;
             var1 = "";
             var2 = "";
+            string_principal = -1;
+            string_final = -1;
             while (cabeza!=null)
             {
                 #region analizador
@@ -2003,7 +2248,7 @@ namespace CompiladorTriangulo
                                     //para buscar variables 
                                     if (errores.Rows.Count == 0)
                                     {
-                                        DECLARACIONES_STRING();
+                                        //DECLARACIONES_STRING();
                                         GENERAR_ENSAMBLADOR();
                                     }
                                     Llenar_tabla();
@@ -2277,6 +2522,61 @@ namespace CompiladorTriangulo
         #endregion       
 
         #region Infix To Postfix
+        //variables para realizar la polaca
+        public Boolean bandera_posfija = false, usar_var2 = false;
+        public int S = 1,OP=0;
+        public string[] operador = new string[30];
+        public void pila_vacia2()
+        {
+            if (TOPE == 0)
+            {
+                BAND = true;
+                TOPE = -1;                
+            }
+            else
+            {
+                BAND = false;
+            }
+        }
+        public void pila_llena2()
+        {
+            if (TOPE == MAX)
+            {
+                BAND = true;
+            }
+            else
+            {
+                BAND = false;
+            }
+        }
+        public void pone2()
+        {
+            pila_llena2();
+            if (BAND == true)
+            {
+                //mensaje de lleno
+            }
+            else
+            {
+                TOPE = TOPE + 1;
+                operador[TOPE] = DATO;
+            }           
+        }        
+        public void quita2()
+        {
+            pila_vacia2();
+            if (BAND == true)
+            {
+                //mensaje de vacio
+            }
+            else
+            {
+                DATO = operador[TOPE];                
+                TOPE = TOPE - 1;
+            }
+        }
+        //---------------------
+
         public Boolean BAND;
         public string[] PILA = new string[1000];
         public string texto, DATO, EPOS, aux1, aux2,postfijo;

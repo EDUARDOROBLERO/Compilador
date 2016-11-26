@@ -14,17 +14,11 @@ $2     DW  0000H
 $3     DW  0000H 
 
 
-A	 DW 	 ?
-B	 DW 	 ?
-C	 DB 	 255 	 DUP('$')
-D	 DW 	 ?
 X	 DW 	 ?
 Y	 DW 	 ?
 Z	 DW 	 ?
-R	 DB 	 255 	 DUP('$')
 
 
-@TmpASM_0 DB 'STRING','$' 
 
 
 .CODE 
@@ -43,39 +37,12 @@ BEGIN:
 	MOV AX, 5 
 	I_ASIGNAR Y, AX
 
-	MOV AX, 4.5 
-	I_ASIGNAR B, AX
-
 	SUMAR X, Y,$1
 
-	RESTA $1, 4,$1
+	RESTA $1, 4,$2
 
-	MULTI $1, 3,$1
-
-	DIVIDE $1, 5,$1
-
-	MOV AX, $1
+	MOV AX, $2
 	I_ASIGNAR Z, AX
-
-	S_ASIGNAR C $TmpASM_0
-
-	S_COUT "PEDRO"
-
-	I_COUT 4.5
-
-	I_COUT 2
-
-	MOV AX, 4 
-	I_ASIGNAR A, AX
-
-	MOV AX, 4
-	I_ASIGNAR A, AX
-	SUMAR A, 1,$1
-	MOV AX, $1
-	I_ASIGNAR A, AX
-
-	MOV AX, 4 
-	I_ASIGNAR A, AX
 
 
 
