@@ -14,11 +14,20 @@ $2     DW  0000H
 $3     DW  0000H 
 
 
+A	 DW 	 ?
+B	 DW 	 ?
+C	 DB 	 255 	 DUP('$')
+D	 DW 	 ?
 X	 DW 	 ?
 Y	 DW 	 ?
 Z	 DW 	 ?
+R	 DB 	 255 	 DUP('$')
 
 
+@TmpASM_0 DB 'HOLA ','$' 
+@TmpASM_1 DB 'MI ','$' 
+@TmpASM_2 DB 'AMOR ','$' 
+@TmpASM_3 DB 'QUERIDO','$' 
 
 
 .CODE 
@@ -31,18 +40,56 @@ BEGIN:
 	INT 21H 
 	COMPI  PROC 
 
-	MOV AX, 13 
-	I_ASIGNAR X, AX
-
 	MOV AX, 5 
 	I_ASIGNAR Y, AX
 
-	SUMAR X, Y,$1
+	I_CIN Y
 
-	RESTA $1, 4,$2
+	MOV AX, 13 
+	I_ASIGNAR X, AX
 
-	MOV AX, $2
+	MOV AX, 4.5 
+	I_ASIGNAR B, AX
+
+	I_COUT B
+
+	SUMAR 3, 10,$1
+	MOV AX, $1
 	I_ASIGNAR Z, AX
+
+	MULTI X, Y,$1
+	MULTI 5, Z,$2
+	DIVIDE $1, $2,$3
+	SUMAR $3, 10,$4
+	RESTA $4, 3,$5
+	RESTA $5, 2,$6
+	MOV AX, $6
+	I_ASIGNAR Z, AX
+
+	CONCATENAR @TmpASM_0, @TmpASM_1,$1
+	CONCATENAR $1, @TmpASM_2,$1
+	CONCATENAR $1, @TmpASM_3,$1
+	MOV AX, $1 ,
+	S_ASIGNAR C, AX
+	
+	S_COUT C
+
+	MOV AX, 4 
+	I_ASIGNAR A, AX
+
+	DIVIDE 5, 5,$1
+	MULTI $1, 5,$2
+	DIVIDE 5, 5,$3
+	SUMAR 5, $3,$4
+	RESTA $2, $4,$5
+	MOV AX, $5
+	I_ASIGNAR A, AX
+
+	MOV AX, 4.5
+	I_ASIGNAR B, AX
+	RESTA B, 1,$1
+	MOV AX, $1
+	I_ASIGNAR B, AX
 
 
 

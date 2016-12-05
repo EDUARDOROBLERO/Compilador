@@ -152,8 +152,7 @@ namespace CompiladorTriangulo
         private void lexicoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dataGridView1Lexico.Rows.Clear();            
-            dataGridView2.Rows.Clear();
-            dataGridView3.Rows.Clear();
+            dataGridView2.Rows.Clear();            
 
             Tabla_De_Errores.Rows.Clear();
             string text = textBox1.Text;
@@ -179,8 +178,7 @@ namespace CompiladorTriangulo
         private void sintaxisToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dataGridView1Lexico.Rows.Clear();            
-            dataGridView2.Rows.Clear();
-            dataGridView3.Rows.Clear();
+            dataGridView2.Rows.Clear();            
             Tabla_De_Errores.Rows.Clear();
             string text = textBox1.Text;            
 
@@ -211,8 +209,7 @@ namespace CompiladorTriangulo
         private void todoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dataGridView1Lexico.Rows.Clear();           
-            dataGridView2.Rows.Clear();
-            dataGridView3.Rows.Clear();
+            dataGridView2.Rows.Clear();            
             string text = textBox1.Text;
 
             //analisis lexico
@@ -239,8 +236,7 @@ namespace CompiladorTriangulo
         private void limpiarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dataGridView1Lexico.Rows.Clear();            
-            dataGridView2.Rows.Clear();
-            dataGridView3.Rows.Clear();
+            dataGridView2.Rows.Clear();           
             Tabla_De_Errores.Rows.Clear();
             textBox1.Clear();            
         }
@@ -281,8 +277,7 @@ namespace CompiladorTriangulo
             if (e.KeyCode == Keys.F7)
             {
                 dataGridView1Lexico.Rows.Clear();
-                dataGridView2.Rows.Clear();
-                dataGridView3.Rows.Clear();
+                dataGridView2.Rows.Clear();                
                 Tabla_De_Errores.Rows.Clear();
                 string text = textBox1.Text;
 

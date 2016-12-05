@@ -8,17 +8,19 @@ VAR Y: INTEGER;
 VAR Z: INTEGER;
 IN
 Y:=5;
-Y:=LEER();
+LEER(Y);
 X:=13; 
 B:=4.5;
 ESCRIBIR(B);
-Z:=X+Y-4*3/5;
-C:="HOLA"+"MI"+"AMOR"+"QUERIDO";
+Z:=3+10;
+Z:=X * Y / (5 * Z) + 10-3-2;
+C:="HOLA "+"MI "+"AMOR "+"QUERIDO";
 ESCRIBIR(C);
 A:=4;
 FOR( VAR R: STRING; B=A && A=B; A++)
 {
 A:=4;
+B--;
 }
 WHILE(B<=A && A>=B){
 D:=FALSE;
