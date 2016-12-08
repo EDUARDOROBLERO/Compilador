@@ -17,12 +17,13 @@ Z:=X * Y / (5 * Z) + 10-3-2;
 C:="HOLA "+"MI "+"AMOR "+"QUERIDO";
 ESCRIBIR(C);
 A:=4;
-FOR( VAR R: STRING; B=A && A=B; A++)
+FOR( VAR R: STRING; B>=A; A++)
 {
 A:=4;
 B--;
 }
-WHILE(B<=A && A>=B){
-D:=FALSE;
+WHILE(A>=B){
+A:=10;
+Z:=A+Y;
 }
 END

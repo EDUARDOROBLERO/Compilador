@@ -71,22 +71,86 @@ namespace CompiladorTriangulo
                 {
 
                     cabeza = cabeza.siguiente;
-                    if (cabeza.toquen == 113)
+                    if (band2 == true)
                     {
-                        au = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tSUMAR " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
-                        complemento += au;
-                        cabeza = cabeza.siguiente;
+                        if (cabeza.toquen == 113)
+                        {
+                            au = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tSUMAR " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                            auxFOR += au;
+                            cabeza = cabeza.siguiente;
+                        }
+                        else if (cabeza.toquen == 114)
+                        {
+                            de = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tRESTA " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                            auxFOR += de;
+                            cabeza = cabeza.siguiente;
+                        }
+                        band2 = false;
                     }
-                    else if (cabeza.toquen == 114)
+                    else
                     {
-                        de = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tRESTA " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
-                        complemento += de;
-                        cabeza = cabeza.siguiente;
+                        if (cabeza.toquen == 113)
+                        {
+                            au = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tSUMAR " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                            complemento += au;
+                            cabeza = cabeza.siguiente;
+                        }
+                        else if (cabeza.toquen == 114)
+                        {
+                            de = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tRESTA " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                            complemento += de;
+                            cabeza = cabeza.siguiente;
+                        }
                     }
+                    
                 }
-                else if (cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen <= 117)
+                else if (cabeza.siguiente.toquen >= 103 && cabeza.siguiente.toquen <= 106)
                 {
                     bandera_posfija = true;
+                }
+                else if((cabeza.siguiente.toquen>=107&&cabeza.siguiente.toquen<=112||cabeza.siguiente.toquen==129)&& (band1 == true||band2==true||band3==true))
+                {
+                    string tsm1 = cabeza.lexema;
+                    cabeza = cabeza.siguiente;
+                    int val = cabeza.toquen;
+                    cabeza = cabeza.siguiente;
+                    string tsm2 = cabeza.lexema;
+                    //   >
+                    if (val == 107)
+                    {
+                        complemento += "\n\tI_MAYOR " + tsm1 + ", " + tsm2 + " ,$1";
+                    }
+                    // <
+                    if (val == 108)
+                    {
+                        complemento += "\n\tI_MENOR " + tsm1 + ", " + tsm2 + " ,$1";
+                    }
+                    // =
+                    if (val == 109)
+                    {
+                        complemento += "\n\tI_IGUAL " + tsm1 + ", " + tsm2 + " ,$1";
+                    }
+                    // <=
+                    if (val == 110)
+                    {
+                        complemento += "\n\tI_MENORIGUAL " + tsm1 + ", " + tsm2 + " ,$1";
+                    }
+                    //>=
+                    if (val == 111)
+                    {
+                        complemento += "\n\tI_MAYORIGUAL " + tsm1 + ", " + tsm2 + " ,$1";
+
+                    }
+                    //\=
+                    if (val == 112)
+                    {
+
+                    }
+                    //<>
+                    if (val == 129)
+                    {
+                        complemento += "\n\tI_DIFERENTES " + tsm1 + ", " + tsm2 + " ,$1";
+                    }
                 }
                 else if (cabeza.siguiente.toquen == 120)
                 {
@@ -281,7 +345,7 @@ namespace CompiladorTriangulo
         public CrearNodo INCOMPATIBILIDAD2IF2(CrearNodo cabeza)
         {
             //si es &&           
-            if (cabeza.toquen == 128)
+           /* if (cabeza.toquen == 128)
             {
                 cabeza = cabeza.siguiente;
                 cabeza = INCOMPATIBILIDAD1IF2(cabeza);
@@ -291,7 +355,7 @@ namespace CompiladorTriangulo
             {
                 //no se hace nada
                 //cabeza = cabeza.siguiente;               
-            }
+            }*/
             return cabeza;
         }
         //metodo para verificar segundas expresiones
@@ -363,7 +427,7 @@ namespace CompiladorTriangulo
         public CrearNodo INCOMPATIBILIDAD2IF(CrearNodo cabeza)
         {
             //si es &&           
-            if (cabeza.toquen == 128)
+            /*if (cabeza.toquen == 128)
             {
                 cabeza = cabeza.siguiente;
                 cabeza = INCOMPATIBILIDAD1IF(cabeza);
@@ -373,7 +437,7 @@ namespace CompiladorTriangulo
             {
                 //no se hace nada
                 //cabeza = cabeza.siguiente;               
-            }
+            }*/
             return cabeza;
         }
         //metodo para verificar segundas expresiones
@@ -544,7 +608,7 @@ namespace CompiladorTriangulo
         public CrearNodo INCOMPATIBILIDAD2(CrearNodo cabeza)
         {
             //si es un operador
-            if (cabeza.toquen >= 103 && cabeza.toquen <= 117 || cabeza.toquen == 129 || cabeza.toquen == 130)
+            if (cabeza.toquen >= 103 && cabeza.toquen <= 117 || cabeza.toquen == 129)
             {                
                 cabeza = cabeza.siguiente;
                 cabeza = INCOMPATIBILIDAD1(cabeza);
@@ -876,13 +940,7 @@ namespace CompiladorTriangulo
                 cabeza = cabeza.siguiente;
                 cabeza = PrimaryExpresion(cabeza);               
                 cabeza = SecondExpresion2(cabeza);
-            }
-            else if (cabeza.toquen == 130)
-            {
-                cabeza = cabeza.siguiente;
-                cabeza = PrimaryExpresion(cabeza);
-                cabeza = SecondExpresion2(cabeza);
-            }            
+            }                        
             else
             {
                 //no se hace nada                               
@@ -905,19 +963,22 @@ namespace CompiladorTriangulo
         //metodo de else_estatement
         public CrearNodo else_estatement(CrearNodo cabeza)
         {
-            while (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213)
+            while (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213 || cabeza.toquen == 217 || cabeza.toquen == 300 || cabeza.toquen == 301)
             {
                 #region IF
                 //si es un if
                 if (cabeza.toquen == 206)
                 {
+                    conteo_IF++;
+                    complemento += "\n\tET_IF" + conteo_IF + ":\n\t";
+                    band3 = true;
                     cabeza = cabeza.siguiente;
                     //si es (
                     if (cabeza.toquen == 122)
                     {
                         cabeza = cabeza.siguiente;
                         //si no se genera ninguna exprexion
-                        if (cabeza.toquen == 208)
+                        if (cabeza.toquen == 123)
                         {
                             error = busca_error.ERROR(520);
                             grierror.Rows.Add(520, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
@@ -926,6 +987,13 @@ namespace CompiladorTriangulo
                         }
                         else
                         {
+                            //si es identificador y viene con < > <=  <>  >= para checar incompatibilidades que sean iguales
+                            if ((cabeza.toquen == 100 || cabeza.toquen == 210 || cabeza.toquen == 211) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
+                            {
+                                COMP(cabeza);
+                                INCOMPATIBLEIF(cabeza);
+                            }
+                            complemento += "\n\tCMP AX,0\n\tJE FINAL_IF" + conteo_IF + "\n\t";
                             cabeza = Expresion(cabeza);
                             if (band == false)
                             {
@@ -957,6 +1025,8 @@ namespace CompiladorTriangulo
                                         //si es }
                                         if (cabeza.toquen == 125)
                                         {
+                                            complemento += "\n\tJMP ET_IF" + conteo_IF + "\n\tFINAL_IF" + conteo_IF + ":\n\t";
+                                            band3 = false;
                                             cabeza = cabeza.siguiente;
                                             //si ocurre un else
                                             if (cabeza.toquen == 204)
@@ -988,7 +1058,7 @@ namespace CompiladorTriangulo
                                                 else
                                                 {
                                                     error = busca_error.ERROR(512);
-                                                    grierror.Rows.Add(512, "Se encontro  '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
+                                                    grierror.Rows.Add(512, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                                     band = false;
                                                     break;
                                                 }
@@ -1034,14 +1104,15 @@ namespace CompiladorTriangulo
                         band = false;
                         break;
                     }
+
                 }
                 #endregion
                 else
                 {
                     //si se genera un comando
-                    if (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213)
+                    if (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213 || cabeza.toquen == 217 || cabeza.toquen == 300 || cabeza.toquen == 301)
                     {
-                        while (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213)
+                        while (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213 || cabeza.toquen == 217 || cabeza.toquen == 300 || cabeza.toquen == 301)
                         {
                             cabeza = command(cabeza);
                             if (band == false)
@@ -1269,6 +1340,9 @@ namespace CompiladorTriangulo
                 //si es un if
                 if (cabeza.toquen == 206)
                 {
+                    conteo_IF++;
+                    complemento += "\n\tET_IF" + conteo_IF + ":\n\t";
+                    band3 = true;
                     cabeza = cabeza.siguiente;
                     //si es (
                     if (cabeza.toquen == 122)
@@ -1284,6 +1358,13 @@ namespace CompiladorTriangulo
                         }
                         else
                         {
+                            //si es identificador y viene con < > <=  <>  >= para checar incompatibilidades que sean iguales
+                            if ((cabeza.toquen == 100 || cabeza.toquen == 210 || cabeza.toquen == 211) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
+                            {
+                                COMP(cabeza);
+                                INCOMPATIBLEIF(cabeza);
+                            }
+                            complemento += "\n\tCMP AX,0\n\tJE FINAL_IF" + conteo_IF + "\n\t";
                             cabeza = Expresion(cabeza);
                             if (band == false)
                             {
@@ -1315,6 +1396,8 @@ namespace CompiladorTriangulo
                                         //si es }
                                         if (cabeza.toquen == 125)
                                         {
+                                            complemento += "\n\tJMP ET_IF" + conteo_IF + "\n\tFINAL_IF" + conteo_IF + ":\n\t";
+                                            band3 = false;
                                             cabeza = cabeza.siguiente;
                                             //si ocurre un else
                                             if (cabeza.toquen == 204)
@@ -1400,6 +1483,9 @@ namespace CompiladorTriangulo
                 //si es un while
                 if (cabeza.toquen == 203)
                 {
+                    conteo_WHILE++;
+                    complemento += "\n\tET_WHILE" + conteo_WHILE+":\n\t";
+                    band1 = true;
                     cabeza = cabeza.siguiente;
                     //si es (
                     if (cabeza.toquen == 122)
@@ -1418,8 +1504,12 @@ namespace CompiladorTriangulo
                             //si es identificador y viene con < > <=  <>  >= para checar incompatibilidades que sean iguales
                             if ((cabeza.toquen == 100||cabeza.toquen==210||cabeza.toquen==211) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
                             {
+                                COMP(cabeza);
                                 INCOMPATIBLEIF(cabeza);
                             }
+
+                            complemento += "\n\tCMP AX,0\n\tJE FINAL_WHILE" + conteo_WHILE+"\n\t";
+
                             cabeza = Expresion(cabeza);                            
                             //si es )
                             if (cabeza.toquen == 123)
@@ -1428,26 +1518,46 @@ namespace CompiladorTriangulo
                                 //si es un {
                                 if (cabeza.toquen == 124)
                                 {
-                                    //checar en esta parte por que no regresa el {
                                     cabeza = cabeza.siguiente;
-                                    cabeza = command(cabeza);
-                                    if (band == false)
+                                    //si se genera un comando
+                                    if (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213 || cabeza.toquen == 217 || cabeza.toquen == 300 || cabeza.toquen == 301)
                                     {
-                                        break;
-                                    }
-                                    //si es }                                                                                    
-                                    if (cabeza.toquen == 125)
-                                    {
-                                        cabeza = cabeza.siguiente;
-                                        break;
+                                        while (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213 || cabeza.toquen == 217 || cabeza.toquen == 300 || cabeza.toquen == 301)
+                                        {
+                                            cabeza = command(cabeza);
+                                            if (band == false)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                        if (band == false)
+                                        {
+                                            break;
+                                        }
+                                        //si es }                                                                                    
+                                        if (cabeza.toquen == 125)
+                                        {
+                                            complemento += "\n\tJMP ET_WHILE" + conteo_WHILE + "\n\tFINAL_WHILE" + conteo_WHILE+":\n\t";
+                                            band1 = false;
+                                            cabeza = cabeza.siguiente;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            error = busca_error.ERROR(513);
+                                            grierror.Rows.Add(513, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
+                                            band = false;
+                                            break;
+                                        }
                                     }
                                     else
                                     {
-                                        error = busca_error.ERROR(513);
-                                        grierror.Rows.Add(513, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
+                                        error = busca_error.ERROR(508);
+                                        grierror.Rows.Add(508, "Se encontro '" + cabeza.lexema + "' y provoco un error, " + error, cabeza.linea, "");
                                         band = false;
                                         break;
                                     }
+
                                 }
                                 else
                                 {
@@ -1829,6 +1939,8 @@ namespace CompiladorTriangulo
                 #region For
                 if (cabeza.toquen==217)
                 {
+                    conteo_FOR++;
+                    complemento += "\n\tET_FOR" + conteo_FOR + ":\n\t";                    
                     cabeza = cabeza.siguiente;
                     //si es (
                     if (cabeza.toquen == 122)
@@ -1844,11 +1956,16 @@ namespace CompiladorTriangulo
                         }
                         else
                         {
+                            band2 = true;
                             //si es identificador y viene con < > <=  <>  >= para checar incompatibilidades que sean iguales
                             if ((cabeza.toquen==100)&& (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
                             {
+                                COMP(cabeza);
                                 INCOMPATIBLEIF(cabeza);
-                            }                                                      
+                            }
+
+                            complemento += "\n\tCMP AX,0\n\tJE FINAL_FOR" + conteo_FOR+"\n\t";
+
                             cabeza = Expresion(cabeza);
 
                             if (cabeza.toquen == 120)
@@ -1870,7 +1987,10 @@ namespace CompiladorTriangulo
                                         
                                         INCOMPATIBLEIF2(cabeza);
                                     }
-                                    cabeza = Expresion(cabeza);                                   
+
+                                   
+                                    cabeza = Expresion(cabeza);
+                                                                       
                                     //si es )
                                     if (cabeza.toquen == 123)
                                     {
@@ -1880,9 +2000,9 @@ namespace CompiladorTriangulo
                                         {                                           
                                             cabeza = cabeza.siguiente;
                                             //si se genera un comando
-                                            if (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213 || cabeza.toquen == 217)
+                                            if (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213 || cabeza.toquen == 217 || cabeza.toquen == 300 || cabeza.toquen == 301)
                                             {
-                                                while (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213 || cabeza.toquen == 217)
+                                                while (cabeza.toquen == 100 || cabeza.toquen == 206 || cabeza.toquen == 203 || cabeza.toquen == 212 || cabeza.toquen == 213 || cabeza.toquen == 217 || cabeza.toquen == 300 || cabeza.toquen == 301)
                                                 {
                                                     cabeza = command(cabeza);
                                                     if (band == false)
@@ -1897,6 +2017,10 @@ namespace CompiladorTriangulo
                                                 //si es }                                                                                    
                                                 if (cabeza.toquen == 125)
                                                 {
+                                                    complemento += auxFOR;
+                                                    complemento += "\n\tJMP ET_FOR" + conteo_FOR + "\n\tFINAL_FOR" + conteo_FOR+":\n\t";
+                                                    band2 = false;
+                                                    auxFOR = "";
                                                     cabeza = cabeza.siguiente;
                                                     break;
                                                 }
@@ -1965,8 +2089,9 @@ namespace CompiladorTriangulo
             lista_declarados.Clear();
             valor_variable.Clear();
             conteo = 0;
-            //conteo1 = 0;
-            //conteo01 =0;
+            conteo_FOR = 0;
+            conteo_WHILE = 0;
+            conteo_IF = 0;
             var1 = "";
             var2 = "";
             string_principal = -1;
@@ -2077,13 +2202,14 @@ namespace CompiladorTriangulo
         #endregion
 
         #region Ensamblador
-        //variables
+        //variables para los ciclos
+        public string auxWHILE, auxIF, auxFOR;
 
         //variables nuevas a usar
         public string VARIABLES, ASIGNACIONES_STRING;
-
-        public string escribir, header, codigofinal, final1,final2,complemento,asig,au,de;
-        public int conteo = 0;
+        public bool band1=false, band2=false, band3 = false;
+        public string escribir, header, codigofinal, final1,final2,complemento,asig,au,de,asm_FOR,asm_WHILE,asm_IF;
+        public int conteo = 0,conteo_IF=0,conteo_FOR=0,conteo_WHILE=0;
         public void GENERAR_ENSAMBLADOR()
         {
             
@@ -2095,6 +2221,7 @@ namespace CompiladorTriangulo
             ASIGNACIONES_STRING += "\n\n";            
             complemento += "\n\n";
             //concat += "\n\n";
+            
             codigofinal = header+VARIABLES+ASIGNACIONES_STRING+final1+complemento+final2;
 
             //codigofinal =header+declaraciones+declaracionesstring+ /*concat + */ impresionesstring+final1+complemento+final2;
@@ -2104,6 +2231,7 @@ namespace CompiladorTriangulo
             file.Close();            
         }
 
+        public string pol;
         public void CALCULA()
         {
             bandera_posfija = false;
@@ -2171,19 +2299,19 @@ namespace CompiladorTriangulo
                     }
                     if (caracter == '+')
                     {
-                        complemento += "\n\tSUMAR " + var1 + ", " + var2 + ",$" + S;
+                        pol += "\n\tSUMAR " + var1 + ", " + var2 + ",$" + S;
                     }
                     if (caracter == '-')
                     {
-                        complemento += "\n\tRESTA " + var1 + ", " + var2 + ",$" + S;
+                        pol += "\n\tRESTA " + var1 + ", " + var2 + ",$" + S;
                     }
                     if (caracter == '*')
                     {
-                        complemento += "\n\tMULTI " + var1 + ", " + var2 + ",$" + S;
+                        pol += "\n\tMULTI " + var1 + ", " + var2 + ",$" + S;
                     }
                     if (caracter == '/')
                     {
-                        complemento += "\n\tDIVIDE " + var1 + ", " + var2 + ",$" + S;
+                        pol += "\n\tDIVIDE " + var1 + ", " + var2 + ",$" + S;
                     }
                     DATO = "$" + S.ToString();
                     pone2();
@@ -2197,8 +2325,20 @@ namespace CompiladorTriangulo
             } while (postfijo.Length > puntero);
 
             quita2();
-            complemento += "\n\tMOV AX, " + DATO + "\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+            pol += "\n\tMOV AX, " + DATO + "\n\tI_ASIGNAR " + variable_principal + ", AX\n";
             S = 1;
+
+            if (band2 == true)
+            {
+                auxFOR += pol;
+                band2 = false;
+                pol = "";
+            }
+            else
+            {
+                complemento += pol;
+                pol = "";
+            }
         }
 
         #endregion
