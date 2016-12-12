@@ -75,13 +75,13 @@ namespace CompiladorTriangulo
                     {
                         if (cabeza.toquen == 113)
                         {
-                            au = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tSUMAR " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                            au = "\n\tSUMAR " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
                             auxFOR += au;
                             cabeza = cabeza.siguiente;
                         }
                         else if (cabeza.toquen == 114)
                         {
-                            de = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tRESTA " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                            de = "\n\tRESTA " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
                             auxFOR += de;
                             cabeza = cabeza.siguiente;
                         }
@@ -91,13 +91,13 @@ namespace CompiladorTriangulo
                     {
                         if (cabeza.toquen == 113)
                         {
-                            au = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tSUMAR " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                            au = "\n\tSUMAR " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
                             complemento += au;
                             cabeza = cabeza.siguiente;
                         }
                         else if (cabeza.toquen == 114)
                         {
-                            de = "\n\tMOV AX, " + Buscar_var3(variable_principal) + "\n\tI_ASIGNAR " + variable_principal + ", AX\n\tRESTA " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
+                            de = "\n\tRESTA " + variable_principal + ", 1,$1\n\tMOV AX, $1\n\tI_ASIGNAR " + variable_principal + ", AX\n";
                             complemento += de;
                             cabeza = cabeza.siguiente;
                         }
@@ -118,38 +118,38 @@ namespace CompiladorTriangulo
                     //   >
                     if (val == 107)
                     {
-                        complemento += "\n\tI_MAYOR " + tsm1 + ", " + tsm2 + " ,$1";
+                        complemento += "\n\tI_MAYOR " + tsm1 + ", " + tsm2 + " ,$1\n\tMOV AX,$1";
                     }
                     // <
                     if (val == 108)
                     {
-                        complemento += "\n\tI_MENOR " + tsm1 + ", " + tsm2 + " ,$1";
+                        complemento += "\n\tI_MENOR " + tsm1 + ", " + tsm2 + " ,$1\n\tMOV AX,$1";
                     }
                     // =
                     if (val == 109)
                     {
-                        complemento += "\n\tI_IGUAL " + tsm1 + ", " + tsm2 + " ,$1";
+                        complemento += "\n\tI_IGUAL " + tsm1 + ", " + tsm2 + " ,$1\n\tMOV AX,$1";
                     }
                     // <=
                     if (val == 110)
                     {
-                        complemento += "\n\tI_MENORIGUAL " + tsm1 + ", " + tsm2 + " ,$1";
+                        complemento += "\n\tI_MENORIGUAL " + tsm1 + ", " + tsm2 + " ,$1\n\tMOV AX,$1";
                     }
                     //>=
                     if (val == 111)
                     {
-                        complemento += "\n\tI_MAYORIGUAL " + tsm1 + ", " + tsm2 + " ,$1";
+                        complemento += "\n\tI_MAYORIGUAL " + tsm1 + ", " + tsm2 + " ,$1\n\tMOV AX,$1";
 
                     }
                     //\=
                     if (val == 112)
                     {
-
+                        complemento += "\n\tI_DIFERENTES " + tsm1 + ", " + tsm2 + " ,$1\n\tMOV AX,$1";
                     }
                     //<>
                     if (val == 129)
                     {
-                        complemento += "\n\tI_DIFERENTES " + tsm1 + ", " + tsm2 + " ,$1";
+                        complemento += "\n\tI_DIFERENTES " + tsm1 + ", " + tsm2 + " ,$1\n\tMOV AX,$1";
                     }
                 }
                 else if (cabeza.siguiente.toquen == 120)
@@ -1025,18 +1025,22 @@ namespace CompiladorTriangulo
                                         //si es }
                                         if (cabeza.toquen == 125)
                                         {
-                                            complemento += "\n\tJMP ET_IF" + conteo_IF + "\n\tFINAL_IF" + conteo_IF + ":\n\t";
-                                            band3 = false;
                                             cabeza = cabeza.siguiente;
                                             //si ocurre un else
                                             if (cabeza.toquen == 204)
                                             {
+                                                conteo_ELSE++;
+                                                complemento += "\n\tJMP FINAL_ELSE" + conteo_ELSE;
+                                                band3 = false;
+                                                complemento += "\n\tET_ELSE" + conteo_ELSE + ":\n\t";
                                                 cabeza = cabeza.siguiente;
                                                 //si es {
                                                 if (cabeza.toquen == 124)
                                                 {
                                                     cabeza = cabeza.siguiente;
                                                     cabeza = else_estatement(cabeza);
+
+                                                    complemento += "\n\tCMP AX,0\n\tJE FINAL_ELSE" + conteo_ELSE + "\n\t";
                                                     if (band == false)
                                                     {
                                                         break;
@@ -1062,6 +1066,12 @@ namespace CompiladorTriangulo
                                                     band = false;
                                                     break;
                                                 }
+                                            }
+                                            else
+                                            {
+                                                complemento += "\n\tJMP FINAL_IF" + conteo_IF + "\n\tFINAL_IF" + conteo_IF + ":\n\t";
+                                                band3 = false;
+                                                break;
                                             }
                                         }
                                         else
@@ -1359,7 +1369,7 @@ namespace CompiladorTriangulo
                         else
                         {
                             //si es identificador y viene con < > <=  <>  >= para checar incompatibilidades que sean iguales
-                            if ((cabeza.toquen == 100 || cabeza.toquen == 210 || cabeza.toquen == 211) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
+                            if ((cabeza.toquen >= 100 && cabeza.toquen <= 102) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 114 || cabeza.siguiente.toquen == 129 || cabeza.siguiente.toquen == 126))
                             {
                                 COMP(cabeza);
                                 INCOMPATIBLEIF(cabeza);
@@ -1395,19 +1405,24 @@ namespace CompiladorTriangulo
                                         }
                                         //si es }
                                         if (cabeza.toquen == 125)
-                                        {
-                                            complemento += "\n\tJMP ET_IF" + conteo_IF + "\n\tFINAL_IF" + conteo_IF + ":\n\t";
-                                            band3 = false;
-                                            cabeza = cabeza.siguiente;
+                                        {                                            
+                                            cabeza = cabeza.siguiente;                                            
                                             //si ocurre un else
                                             if (cabeza.toquen == 204)
-                                            {
+                                            {                                                
+                                                conteo_ELSE++;
+                                                complemento += "\n\tJMP FINAL_ELSE" + conteo_ELSE;
+                                                band3 = false;
+                                                complemento += "\n\tFINAL_IF" + conteo_IF + ":\n\tET_ELSE" + conteo_ELSE + ":\n\t";
                                                 cabeza = cabeza.siguiente;
+                                                band3 = true;
                                                 //si es {
                                                 if (cabeza.toquen == 124)
                                                 {
                                                     cabeza = cabeza.siguiente;
                                                     cabeza = else_estatement(cabeza);
+
+                                                    complemento += "\n\tFINAL_ELSE" + conteo_ELSE + ":\n\t";
                                                     if (band == false)
                                                     {
                                                         break;
@@ -1433,6 +1448,12 @@ namespace CompiladorTriangulo
                                                     band = false;
                                                     break;
                                                 }
+                                            }
+                                            else
+                                            {
+                                                complemento += "\n\tJMP FINAL_IF" + conteo_IF + "\n\tFINAL_IF" + conteo_IF + ":\n\t";
+                                                band3 = false;
+                                                break;
                                             }
                                         }
                                         else
@@ -1501,8 +1522,8 @@ namespace CompiladorTriangulo
                         }
                         else
                         {
-                            //si es identificador y viene con < > <=  <>  >= para checar incompatibilidades que sean iguales
-                            if ((cabeza.toquen == 100||cabeza.toquen==210||cabeza.toquen==211) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
+                            //si es identificador y viene con < > <=  <>  >= para checar incompatibilidades que sean iguales                           
+                            if ((cabeza.toquen >= 100 && cabeza.toquen <= 102) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 114 || cabeza.siguiente.toquen == 129 || cabeza.siguiente.toquen == 126))
                             {
                                 COMP(cabeza);
                                 INCOMPATIBLEIF(cabeza);
@@ -2092,6 +2113,7 @@ namespace CompiladorTriangulo
             conteo_FOR = 0;
             conteo_WHILE = 0;
             conteo_IF = 0;
+            conteo_ELSE = 0;
             var1 = "";
             var2 = "";
             string_principal = -1;
@@ -2203,13 +2225,13 @@ namespace CompiladorTriangulo
 
         #region Ensamblador
         //variables para los ciclos
-        public string auxWHILE, auxIF, auxFOR;
+        public string auxFOR,aux_ELSE;
 
         //variables nuevas a usar
         public string VARIABLES, ASIGNACIONES_STRING;
         public bool band1=false, band2=false, band3 = false;
         public string escribir, header, codigofinal, final1,final2,complemento,asig,au,de,asm_FOR,asm_WHILE,asm_IF;
-        public int conteo = 0,conteo_IF=0,conteo_FOR=0,conteo_WHILE=0;
+        public int conteo = 0,conteo_IF=0,conteo_FOR=0,conteo_WHILE=0,conteo_ELSE=0;
         public void GENERAR_ENSAMBLADOR()
         {
             

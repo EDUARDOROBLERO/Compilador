@@ -17,6 +17,11 @@ Z:=X * Y / (5 * Z) + 10-3-2;
 C:="HOLA "+"MI "+"AMOR "+"QUERIDO";
 ESCRIBIR(C);
 A:=4;
+IF(A<B){
+A--;
+}ELSE{
+B++;
+}
 FOR( VAR R: STRING; B>=A; A++)
 {
 A:=4;

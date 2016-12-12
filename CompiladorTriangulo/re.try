@@ -1,0 +1,12 @@
+LET
+VAR A:INTEGER;
+VAR B:INTEGER;
+IN
+A:=1;
+B:=10;
+IF(A>B){
+A++;
+}ELSE{
+B--;
+}
+END
