@@ -836,13 +836,10 @@ namespace CompiladorTriangulo
                         }
                                                        
                         //pasar a posfijo y asignar
-
                         if (bandera_posfija == true)
                         {
                             CALCULA();
                         }
-
-
                     }
                 }                
                 else
@@ -855,8 +852,7 @@ namespace CompiladorTriangulo
                     
                     valor_de_variable = valor_de_variable + cabeza.lexema;
                     cabeza = cabeza.siguiente;
-                }
-                
+                }                
             }
             //si es un numero
             else if (cabeza.toquen == 101)
@@ -2225,12 +2221,12 @@ namespace CompiladorTriangulo
 
         #region Ensamblador
         //variables para los ciclos
-        public string auxFOR,aux_ELSE;
+        public string auxFOR;
 
         //variables nuevas a usar
         public string VARIABLES, ASIGNACIONES_STRING;
         public bool band1=false, band2=false, band3 = false;
-        public string escribir, header, codigofinal, final1,final2,complemento,asig,au,de,asm_FOR,asm_WHILE,asm_IF;
+        public string escribir, header, codigofinal, final1,final2,complemento,asig,au,de;
         public int conteo = 0,conteo_IF=0,conteo_FOR=0,conteo_WHILE=0,conteo_ELSE=0;
         public void GENERAR_ENSAMBLADOR()
         {
