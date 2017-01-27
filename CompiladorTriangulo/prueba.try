@@ -1,0 +1,40 @@
+LET
+VAR X:INTEGER;
+    VAR Z:INTEGER;
+    VAR CADENA:STRING;
+VAR CADENA2:STRING;
+IN 
+    CADENA := "HOLA ";
+    CADENA2 :=  "MUNDO";
+    ZAZAZA := 3.1416; !VARIABLE NO DECLARADA
+    X := 3+4+5/2; !COMPATIBILIDAD DE TIPOS
+
+    !CIN>>X;
+    !COUT<<"HOLA MUNDO";
+
+    Z := 2 - 3 * 5;
+
+    IF (Z = 0) {
+        X := 1;
+        IF (Z = 0) {
+            X := 2;
+            IF (Z = 0) {
+                X := 3;
+            }
+	    X:=4;
+        }
+	X:=5;
+    } ELSE {
+        X:=7;
+    }
+    X:=8;
+    WHILE (Z = 0) {
+        X := 9;
+    }
+    X++;
+    X--;
+    X:=10;
+    X:=9*8/7-6+5*(3+2);	!COMPROBACION TIPOS
+    X:=9*8-CADENA;	 !COMPROBACION TIPOS
+    CADENA := CADENA + CADENA2 + " BUEN DIA";
+END

@@ -285,28 +285,9 @@ namespace CompiladorTriangulo
 
         Errores busca_error = new Errores();
 
-        #endregion
-
-        public string tipo;
-        public string tipo_variable(string Plexema)
-        {
-            for (int i = 0; i < lista_declarados.Count; i++)
-            {
-                if (lista_declarados[i].lexe == Plexema)
-                {
-                    tipo = lista_declarados[i].tipo;
-                    break;
-                }
-                else
-                {
-                    esta = true;
-                }                
-            }
-            return tipo;
-        }
+        #endregion        
 
         #region sentencia if y while 2
-
 
         public CrearNodo INCOMPATIBILIDAD1IF2(CrearNodo cabeza)
         {
@@ -323,8 +304,7 @@ namespace CompiladorTriangulo
                 cabeza = cabeza.siguiente; 
                 //si es < > <= >= \= <>               
                 if(cabeza.toquen>=107 && cabeza.toquen <= 112)
-                {
-                    
+                {                    
                     caracter = cabeza.lexema;
                     errores.Rows.Add(cabeza.toquen,"Error con '"+caracter+"' ,Solo las expresiones de asignacion, incremento o decremento se pueden usar como instruccion", cabeza.linea, "");
                 }
@@ -340,37 +320,8 @@ namespace CompiladorTriangulo
                 cabeza = cabeza.siguiente;
             }
             return cabeza;
-        }
-        //metodo para verificar las segundas expresiones2
-        public CrearNodo INCOMPATIBILIDAD2IF2(CrearNodo cabeza)
-        {
-            //si es &&           
-           /* if (cabeza.toquen == 128)
-            {
-                cabeza = cabeza.siguiente;
-                cabeza = INCOMPATIBILIDAD1IF2(cabeza);
-                cabeza = INCOMPATIBILIDAD2IF2(cabeza);
-            }
-            else
-            {
-                //no se hace nada
-                //cabeza = cabeza.siguiente;               
-            }*/
-            return cabeza;
-        }
-        //metodo para verificar segundas expresiones
-        public CrearNodo INCOMPATIBILIDADIF2(CrearNodo cabeza)
-        {
-            cabeza = INCOMPATIBILIDAD1IF2(cabeza);
-            cabeza = INCOMPATIBILIDAD2IF2(cabeza);
-            return cabeza;
-        }
-        //metodo para checar las expreciones
-        public CrearNodo INCOMPATIBLEIF2(CrearNodo cabeza)
-        {
-            cabeza = INCOMPATIBILIDADIF2(cabeza);
-            return cabeza;
-        }
+        }        
+                    
         #endregion*/
 
         #region sentencia if y while
@@ -422,37 +373,8 @@ namespace CompiladorTriangulo
                 cabeza = cabeza.siguiente;
             }
             return cabeza;
-        }
-        //metodo para verificar las segundas expresiones2
-        public CrearNodo INCOMPATIBILIDAD2IF(CrearNodo cabeza)
-        {
-            //si es &&           
-            /*if (cabeza.toquen == 128)
-            {
-                cabeza = cabeza.siguiente;
-                cabeza = INCOMPATIBILIDAD1IF(cabeza);
-                cabeza = INCOMPATIBILIDAD2IF(cabeza);
-            }
-            else
-            {
-                //no se hace nada
-                //cabeza = cabeza.siguiente;               
-            }*/
-            return cabeza;
-        }
-        //metodo para verificar segundas expresiones
-        public CrearNodo INCOMPATIBILIDADIF(CrearNodo cabeza)
-        {
-            cabeza = INCOMPATIBILIDAD1IF(cabeza);
-            cabeza = INCOMPATIBILIDAD2IF(cabeza);
-            return cabeza;
-        }
-        //metodo para checar las expreciones
-        public CrearNodo INCOMPATIBLEIF(CrearNodo cabeza)
-        {
-            cabeza = INCOMPATIBILIDADIF(cabeza);
-            return cabeza;
-        }
+        }               
+
         #endregion*/
 
         #region asignaciones
@@ -611,14 +533,12 @@ namespace CompiladorTriangulo
             if (cabeza.toquen >= 103 && cabeza.toquen <= 117 || cabeza.toquen == 129)
             {                
                 cabeza = cabeza.siguiente;
-                cabeza = INCOMPATIBILIDAD1(cabeza);
-                //cabeza = cabeza.siguiente;
+                cabeza = INCOMPATIBILIDAD1(cabeza);               
                 cabeza = INCOMPATIBILIDAD2(cabeza);
             }            
             else
             {
-                //no se hace nada
-                //cabeza = cabeza.siguiente;               
+                //no se hace nada                               
             }
             return cabeza;
         }
@@ -987,7 +907,7 @@ namespace CompiladorTriangulo
                             if ((cabeza.toquen == 100 || cabeza.toquen == 210 || cabeza.toquen == 211) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
                             {
                                 COMP(cabeza);
-                                INCOMPATIBLEIF(cabeza);
+                                INCOMPATIBILIDAD1IF(cabeza);
                             }
                             complemento += "\n\tCMP AX,0\n\tJE FINAL_IF" + conteo_IF + "\n\t";
                             cabeza = Expresion(cabeza);
@@ -1291,7 +1211,7 @@ namespace CompiladorTriangulo
                         if (cabeza.siguiente.toquen==113||cabeza.siguiente.toquen==114)
                         {
                             COMP(cabeza);
-                            INCOMPATIBLEIF2(cabeza);
+                            INCOMPATIBILIDAD1IF2(cabeza);
                         }
                         cabeza = cabeza.siguiente;
                         #region exprecion                
@@ -1368,7 +1288,7 @@ namespace CompiladorTriangulo
                             if ((cabeza.toquen >= 100 && cabeza.toquen <= 102) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 114 || cabeza.siguiente.toquen == 129 || cabeza.siguiente.toquen == 126))
                             {
                                 COMP(cabeza);
-                                INCOMPATIBLEIF(cabeza);
+                                INCOMPATIBILIDAD1IF(cabeza);
                             }
                             complemento += "\n\tCMP AX,0\n\tJE FINAL_IF" + conteo_IF + "\n\t";
                             cabeza = Expresion(cabeza);
@@ -1522,7 +1442,7 @@ namespace CompiladorTriangulo
                             if ((cabeza.toquen >= 100 && cabeza.toquen <= 102) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 114 || cabeza.siguiente.toquen == 129 || cabeza.siguiente.toquen == 126))
                             {
                                 COMP(cabeza);
-                                INCOMPATIBLEIF(cabeza);
+                                INCOMPATIBILIDAD1IF(cabeza);
                             }
 
                             complemento += "\n\tCMP AX,0\n\tJE FINAL_WHILE" + conteo_WHILE+"\n\t";
@@ -1978,7 +1898,7 @@ namespace CompiladorTriangulo
                             if ((cabeza.toquen==100)&& (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 112 || cabeza.siguiente.toquen == 129))
                             {
                                 COMP(cabeza);
-                                INCOMPATIBLEIF(cabeza);
+                                INCOMPATIBILIDAD1IF(cabeza);
                             }
 
                             complemento += "\n\tCMP AX,0\n\tJE FINAL_FOR" + conteo_FOR+"\n\t";
@@ -2001,8 +1921,8 @@ namespace CompiladorTriangulo
                                     if ((cabeza.toquen >=100 && cabeza.toquen<=102) && (cabeza.siguiente.toquen >= 107 && cabeza.siguiente.toquen <= 114 || cabeza.siguiente.toquen == 129||cabeza.siguiente.toquen==126))
                                     {
                                         COMP(cabeza);
-                                        
-                                        INCOMPATIBLEIF2(cabeza);
+
+                                        INCOMPATIBILIDAD1IF2(cabeza);
                                     }
 
                                    
@@ -2241,8 +2161,7 @@ namespace CompiladorTriangulo
             //concat += "\n\n";
             
             codigofinal = header+VARIABLES+ASIGNACIONES_STRING+final1+complemento+final2;
-
-            //codigofinal =header+declaraciones+declaracionesstring+ /*concat + */ impresionesstring+final1+complemento+final2;
+            
             //guardar el codigo generado
             System.IO.StreamWriter file = new System.IO.StreamWriter("C:/Compilador/CompiladorTriangulo/CompiladorTriangulo/ensamblador.txt");
             file.WriteLine(codigofinal);
@@ -2261,13 +2180,10 @@ namespace CompiladorTriangulo
             puntero = 0;
             MAX = postfijo.Length;
             var1 = "";
-            var2 = "";
-            //DATO = caracter.ToString();
+            var2 = "";          
             do
             {
-
                 //si es un numero o letra
-
                 caracter = postfijo[puntero];
                 if ((char.IsLetterOrDigit(caracter)) || caracter == '.' || caracter == 32)
                 {
@@ -2363,28 +2279,20 @@ namespace CompiladorTriangulo
 
         #region manipulacion de variables
 
-
-        //PARA BUSCAR DECLARACIONES EN STRING
-        public void DECLARACIONES_STRING()
+        public string tipo, aux;
+        public string tipo_variable(string Plexema)
         {
-            int a = 0;
-            string tip, lex, lex1;
-            for (int i = a; i < lista_declarados.Count; i++)
+            for (int i = 0; i < lista_declarados.Count; i++)
             {
-                lex = lista_declarados[i].lexe;
-                tip = lista_declarados[i].tipo;
-
-                for (int j = 0; j < valor_variable.Count; j++)
+                if (lista_declarados[i].lexe == Plexema)
                 {
-                    lex1 = valor_variable[j].lexm;
-                    if (lex == lex1 && tip=="STRING")
-                    {                       
-                        ASIGNACIONES_STRING += "@TmpASM_" + conteo + " DB '" + valor_variable[j].valor + "','$' \n";
-                        conteo++;
-                    }                    
-                }                
-            }            
+                    tipo = lista_declarados[i].tipo;
+                    break;
+                }               
+            }
+            return tipo;
         }
+       
         //metodo para quitar las commillas en los string
         public string QUITA_COMILLAS(string texto)
         {            
@@ -2393,8 +2301,7 @@ namespace CompiladorTriangulo
             texto = texto.Substring(1, t);
             return texto;
         }
-
-        public string aux;
+        
         //para llenar la tabla de variables con sus valores
         public void Llenar_tabla()
         {
@@ -2474,23 +2381,7 @@ namespace CompiladorTriangulo
                 errores.Rows.Add(toquen, "Variable '" + lexema + "' No Inicializada ", linea, "");
                 correcto = false;
             }
-        }
-
-        public string cadena;
-        public string Buscar_var3(string lexema)
-        {                      
-            for (int i = 0; i < valor_variable.Count; i++)
-            {
-                if (valor_variable[i].lexm == lexema)
-                {
-                    if (valor_variable[i].valor != "")
-                    {
-                        cadena = valor_variable[i].valor;                       
-                    }
-                }
-            }
-            return cadena;
-        }
+        }       
 
         //metodos para burcar si esta o no la variable declarada
         private void variables(string Plexema)
